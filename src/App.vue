@@ -103,25 +103,25 @@
         ref="container"
         class="relative"
         :style="{
-          height: `${filteredNewsData.length * 190 - 8}px`,
+          height: `${filteredNewsData.length * (itemHeight + 8) - 8}px`,
         }"
       >
         <li
           ref="shadowItem"
-          class="absolute w-full mb-2 translate-y-[-1000px]"
+          class="absolute w-full mb-2 translate-x-[9999px] translate-y-[9999px] opacity-0"
         >
           <a
             class="flex p-3 transition-colors bg-white border-2 border-transparent rounded-md hover:border-blue-500 group"
           >
             <img
               v-show="showBanner"
-              class="w-[150px] h-[75px] md:w-[300px] md:h-[150px] object-cover"
+              class="w-[150px] h-[75px] md:w-[300px] md:h-[150px] object-cover mr-4 rounded-md"
               alt="banner"
             >
-            <div class="flex-1 px-4 overflow-hidden">
+            <div class="flex-1 overflow-hidden">
               <a href="https://ys.mihoyo.com/main/news/detail/" target="_blank">
                 <h2
-                  class="w-full overflow-hidden text-lg font-bold transition-colors whitespace-nowrap overflow-ellipsis"
+                  class="w-full overflow-hidden text-lg font-bold transition-colors group-hover:text-blue-500 whitespace-nowrap overflow-ellipsis"
                 >
                   Shadow
                 </h2>
@@ -133,7 +133,7 @@
                 新闻类型: Shadow
               </div>
               <div class="text-sm">
-                发布时间: 0000-00-00 00:00:00
+                发布时间: 2023-06-13 18:02:00
               </div>
             </div>
           </a>
