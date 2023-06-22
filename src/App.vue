@@ -101,7 +101,7 @@
       </div>
       <ul
         ref="container"
-        class="relative"
+        class="relative overflow-hidden"
         :style="{
           height: `${filteredNewsData.length * (itemHeight + 8) - 8}px`,
         }"
