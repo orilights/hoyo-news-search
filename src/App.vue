@@ -180,7 +180,7 @@
 </template>
 
 <script setup lang="ts">
-import { useDebounce, useElementBounding } from '@vueuse/core'
+import { useElementBounding, useThrottle } from '@vueuse/core'
 import { useToast } from 'vue-toastification'
 import Switch from './components/Switch.vue'
 
@@ -194,6 +194,7 @@ interface NewsExt {
   keyId: number
   value: string | ExtValue[]
 }
+
 interface NewsData {
   contentId: string
   title: string
@@ -201,10 +202,14 @@ interface NewsData {
   tag: string
   start_time: string
 }
+
 interface NewsItem extends NewsData {
   top: number
 }
-const apiUrl = 'https://api.amarea.cn/ys/news'
+
+const NEWS_API = 'https://api.amarea.cn/ys/news'
+const NEWS_REFRESH_API = 'https://api.amarea.cn/ys/news?force_refresh=1'
+const DEFAULT_BANNER = 'https://icdn.amarea.cn/upload/2023/06/6491c83b6fa65.jpg'
 
 const toast = useToast()
 
@@ -213,9 +218,8 @@ const newsUpdateTime = ref(0)
 const tags = ref<{ [index: string]: number }>({})
 const container = ref<HTMLElement>()
 const shadowItem = ref<HTMLElement>()
-const { top: containerTopO } = useElementBounding(container)
-const { height: itemHeight } = useElementBounding(shadowItem)
-const containerTop = useDebounce(containerTopO, 200, { maxWait: 400 })
+const containerTop = useThrottle(useElementBounding(container).top, 30, true)
+const itemHeight = useElementBounding(shadowItem).height
 const filterTag = ref('全部')
 const searchStr = ref('')
 const showSetting = ref(false)
@@ -224,28 +228,31 @@ const loading = ref(false)
 const configLoaded = ref(false)
 
 const filteredNewsData = computed(() => {
-  let _list = []
+  let data: NewsData[]
   if (searchStr.value !== '')
-    _list = newsData.value.filter(news => news.title.includes(searchStr.value))
+    data = newsData.value.filter(news => news.title.toLowerCase().includes(searchStr.value.toLowerCase()))
 
   else if (filterTag.value === '全部')
-    _list = newsData.value
+    data = newsData.value
 
   else
-    _list = newsData.value.filter(news => news.tag === filterTag.value)
+    data = newsData.value.filter(news => news.tag === filterTag.value)
 
-  _list.forEach((v, i) => {
+  data.forEach((v, i) => {
     (v as NewsItem).top = (itemHeight.value + 8) * i
   })
-  return _list as NewsItem[]
+  return data as NewsItem[]
 })
 
 const itemRenderList = computed(() => {
-  const preload = 5
+  const renderRange = {
+    up: 0.5,
+    down: 0.5,
+  }
+  const renderRangeTop = -containerTop.value - renderRange.up * window.innerHeight
+  const renderRangeBottom = -containerTop.value + window.innerHeight + renderRange.down * window.innerHeight
   return filteredNewsData.value.filter((item: NewsItem) => {
-    if (item.top > (-containerTop.value - preload * window.innerHeight) && item.top < (-containerTop.value + (preload + 1) * window.innerHeight))
-      return true
-    return false
+    return (item.top + itemHeight.value > renderRangeTop && item.top < renderRangeBottom)
   })
 })
 
@@ -265,7 +272,7 @@ function fetchData(force_refresh = false) {
   loading.value = true
   newsData.value = []
   tags.value = {}
-  fetch(force_refresh ? `${apiUrl}?force_refresh=1` : apiUrl)
+  fetch(force_refresh ? NEWS_REFRESH_API : NEWS_API)
     .then(res => res.json())
     .then((data) => {
       if (data.code !== 0) {
@@ -302,7 +309,7 @@ function getBanner(exts: NewsExt[]): string {
         return ext.value[0].url
     }
   }
-  return 'https://icdn.amarea.cn/upload/2023/06/6491c83b6fa65.jpg'
+  return DEFAULT_BANNER
 }
 
 function getNewsType(title: string, id: number): string {
@@ -360,8 +367,6 @@ function getNewsType(title: string, id: number): string {
     return '前瞻特别节目'
   if (title.includes('前瞻直播回顾'))
     return '前瞻特别节目'
-  // if (title.includes('前瞻特别节目'))
-  //   return '前瞻特别节目'
 
   if (title.includes('更新通知'))
     return '版本更新说明'
@@ -461,8 +466,6 @@ function getNewsType(title: string, id: number): string {
 
   if (title.includes('H5'))
     return '网页活动'
-  // if (title.match(/获.*奖/))
-  //   return '获奖公告'
 
   if (title.includes('FAQ'))
     return 'FAQ'
