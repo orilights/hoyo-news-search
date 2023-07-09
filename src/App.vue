@@ -114,7 +114,7 @@
             class="flex p-3 transition-colors bg-white border-2 border-transparent rounded-md hover:border-blue-500 group"
           >
             <img
-              v-show="showBanner"
+              v-if="showBanner"
               class="w-[150px] h-[75px] md:w-[300px] md:h-[150px] object-cover mr-4 rounded-md"
               alt="banner"
             >
@@ -152,7 +152,7 @@
             target="_blank"
           >
             <img
-              v-show="showBanner" :src="getBanner(news.ext)"
+              v-if="showBanner" :src="getBanner(news.ext)"
               class="w-[150px] h-[75px] md:w-[300px] md:h-[150px] object-cover mr-4 rounded-md" alt="banner"
             >
             <div class="flex-1 overflow-hidden">
