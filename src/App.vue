@@ -7,8 +7,11 @@
           class="absolute top-[75px] right-0 bg-white p-4 rounded-lg shadow-md"
           @mouseleave="showSetting = false"
         >
-          <div class="flex items-center">
-            显示Banner图片 <Switch v-model="showBanner" class="ml-2" />
+          <div class="flex items-center my-1">
+            <span class="flex-1">显示Banner图片</span> <Switch v-model="showBanner" class="ml-2" />
+          </div>
+          <div class="flex items-center my-1">
+            <span class="flex-1">根据发布时间排序</span> <Switch v-model="sortNews" class="ml-2" />
           </div>
         </div>
       </Transition>
@@ -224,6 +227,7 @@ const filterTag = ref('全部')
 const searchStr = ref('')
 const showSetting = ref(false)
 const showBanner = ref(true)
+const sortNews = ref(false)
 const loading = ref(false)
 const configLoaded = ref(false)
 
@@ -233,14 +237,25 @@ const filteredNewsData = computed(() => {
     data = newsData.value.filter(news => news.title.toLowerCase().includes(searchStr.value.toLowerCase()))
 
   else if (filterTag.value === '全部')
-    data = newsData.value
+    data = newsData.value.slice()
 
   else
     data = newsData.value.filter(news => news.tag === filterTag.value)
 
+  if (sortNews.value) {
+    data = data.sort((a, b) => {
+      const bt = new Date(b.start_time).getTime()
+      const at = new Date(a.start_time).getTime()
+      if (bt === at)
+        return Number(b.contentId) - Number(a.contentId)
+      return bt - at
+    })
+  }
+
   data.forEach((v, i) => {
     (v as NewsItem).top = (itemHeight.value + 8) * i
   })
+
   return data as NewsItem[]
 })
 
@@ -258,6 +273,7 @@ const itemRenderList = computed(() => {
 
 onMounted(() => {
   showBanner.value = localStorage.getItem('showBanner') === 'true'
+  sortNews.value = localStorage.getItem('sortNews') === 'true'
   configLoaded.value = true
   fetchData()
 })
@@ -266,6 +282,7 @@ watchEffect(() => {
   if (!configLoaded.value)
     return
   localStorage.setItem('showBanner', showBanner.value.toString())
+  localStorage.setItem('sortNews', sortNews.value.toString())
 })
 
 function fetchData(force_refresh = false) {
