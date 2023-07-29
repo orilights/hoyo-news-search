@@ -60,7 +60,7 @@
       >
       <ul class="flex flex-wrap gap-1 py-4">
         <li
-          v-for="tag in Object.keys(tags)" :key="tag"
+          v-for="tag in Object.keys(tags).sort((a, b) => tags[b] - tags[a])" :key="tag"
           class="inline-block px-3 py-1 text-sm transition-colors border border-gray-400 rounded-full cursor-pointer hover:text-blue-500 hover:border-blue-400"
           :class="{
             '!text-white !bg-blue-500 !border-blue-500': filterTag === tag,
