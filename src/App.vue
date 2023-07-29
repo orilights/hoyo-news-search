@@ -58,7 +58,7 @@
         v-model="searchStr" type="text" placeholder="搜些什么吧"
         class="w-full px-4 py-2 transition-colors border rounded-full hover:border-blue-500 outline-blue-500"
       >
-      <ul class="flex flex-wrap gap-1 py-4">
+      <ul v-show="!searchEnabled" class="flex flex-wrap gap-1 py-4">
         <li
           v-for="tag in Object.keys(tags).sort((a, b) => tags[b] - tags[a])" :key="tag"
           class="inline-block px-3 py-1 text-sm transition-colors border border-gray-400 rounded-full cursor-pointer hover:text-blue-500 hover:border-blue-400"
@@ -71,8 +71,13 @@
         </li>
       </ul>
 
-      <div v-show="searchStr !== ''">
-        搜索结果：{{ filteredNewsData.length }}
+      <div v-show="searchEnabled" class="py-2">
+        <span class="pr-4">
+          搜索结果：{{ filteredNewsData.length }}
+        </span>
+        <button class="hover:text-blue-500" @click="searchStr = ''">
+          取消搜索
+        </button>
       </div>
       <div v-if="loading" class="flex flex-col items-center gap-2 py-4">
         <svg viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" class="w-[60px] h-[60px]">
@@ -210,6 +215,7 @@ interface NewsItem extends NewsData {
   top: number
 }
 
+const APP_ABBR = 'GNS'
 const NEWS_API = 'https://api.amarea.cn/ys/news'
 const NEWS_REFRESH_API = 'https://api.amarea.cn/ys/news?force_refresh=1'
 const DEFAULT_BANNER = 'https://icdn.amarea.cn/upload/2023/06/6491c83b6fa65.jpg'
@@ -231,9 +237,11 @@ const sortNews = ref(false)
 const loading = ref(false)
 const configLoaded = ref(false)
 
+const searchEnabled = computed(() => searchStr.value !== '')
+
 const filteredNewsData = computed(() => {
   let data: NewsData[]
-  if (searchStr.value !== '')
+  if (searchEnabled.value)
     data = newsData.value.filter(news => news.title.toLowerCase().includes(searchStr.value.toLowerCase()))
 
   else if (filterTag.value === '全部')
