@@ -272,8 +272,8 @@ const itemRenderList = computed(() => {
 })
 
 onMounted(() => {
-  showBanner.value = localStorage.getItem('showBanner') === 'true'
-  sortNews.value = localStorage.getItem('sortNews') === 'true'
+  showBanner.value = (localStorage.getItem(`${APP_ABBR}_showBanner`) || 'true') === 'true'
+  sortNews.value = localStorage.getItem(`${APP_ABBR}_sortNews`) === 'true'
   configLoaded.value = true
   fetchData()
 })
@@ -281,8 +281,8 @@ onMounted(() => {
 watchEffect(() => {
   if (!configLoaded.value)
     return
-  localStorage.setItem('showBanner', showBanner.value.toString())
-  localStorage.setItem('sortNews', sortNews.value.toString())
+  localStorage.setItem(`${APP_ABBR}_showBanner`, showBanner.value.toString())
+  localStorage.setItem(`${APP_ABBR}_sortNews`, sortNews.value.toString())
 })
 
 function fetchData(force_refresh = false) {
