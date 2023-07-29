@@ -430,6 +430,8 @@ function getNewsType(title: string, id: number): string {
     return '剧情PV'
   if (title.includes('幕间PV'))
     return '剧情PV'
+  if (title.includes('序曲PV'))
+    return '剧情PV'
   if (title.includes('全新角色预告'))
     return '角色PV'
   if (title.match(/角色.*预告PV/))
