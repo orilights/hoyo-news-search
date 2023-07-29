@@ -237,18 +237,25 @@ const sortNews = ref(false)
 const loading = ref(false)
 const configLoaded = ref(false)
 
-const searchEnabled = computed(() => searchStr.value !== '')
+const searchEnabled = computed(() => searchStr.value.trim() !== '')
 
 const filteredNewsData = computed(() => {
   let data: NewsData[]
-  if (searchEnabled.value)
-    data = newsData.value.filter(news => news.title.toLowerCase().includes(searchStr.value.toLowerCase()))
+  if (searchEnabled.value) {
+    data = newsData.value.filter(news =>
+      searchStr.value.toLowerCase().trim().split(' ').every(v =>
+        news.title.toLowerCase().includes(v),
+      ),
+    )
+  }
 
-  else if (filterTag.value === '全部')
+  else if (filterTag.value === '全部') {
     data = newsData.value.slice()
+  }
 
-  else
+  else {
     data = newsData.value.filter(news => news.tag === filterTag.value)
+  }
 
   if (sortNews.value) {
     data = data.sort((a, b) => {
