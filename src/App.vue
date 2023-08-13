@@ -345,169 +345,255 @@ function getBanner(exts: NewsExt[]): string {
 }
 
 function getNewsType(title: string, id: number): string {
-  if (title.includes('神铸赋形'))
-    return '武器活动祈愿'
-  if (title.includes('祈愿即将开启'))
-    return '角色活动祈愿'
-  if (title.includes('祈愿现已开启'))
-    return '角色活动祈愿'
-  if (title.includes('活动祈愿'))
-    return '角色活动祈愿'
-  if (title.includes('壁纸'))
-    return '壁纸'
-  if (title.includes('表情包'))
-    return '表情包'
-  if (title.includes('签到活动'))
-    return '签到活动'
-  if ([11473, 12502].includes(id))
-    return '提瓦特美食札记'
-  if (title.includes('提瓦特美食札记'))
-    return '提瓦特美食札记'
-  if ([10016].includes(id))
-    return '生日贺图'
-  if (title.match(/生日.*快乐/) && !title.includes('角色PV'))
-    return '生日贺图'
-  if (title.includes('生日贺图'))
-    return '生日贺图'
-  if (title.includes('同人绘画作品征集'))
-    return '同人绘画作品征集'
-  if (title.match(/(问题|异常).*说明/))
-    return '问题说明'
+  interface Rule {
+    keyword: (string | RegExp)[]
+    include: number[]
+    exclude: number[]
+  }
+  const rules: { [index: string]: Rule } = {
+    武器活动祈愿: {
+      keyword: ['神铸赋形'],
+      include: [],
+      exclude: [],
+    },
+    角色活动祈愿: {
+      keyword: ['祈愿即将开启', '祈愿现已开启', '活动祈愿'],
+      include: [],
+      exclude: [],
+    },
+    壁纸: {
+      keyword: ['壁纸'],
+      include: [],
+      exclude: [],
+    },
+    表情包: {
+      keyword: ['表情包'],
+      include: [],
+      exclude: [],
+    },
+    签到活动: {
+      keyword: ['签到活动'],
+      include: [],
+      exclude: [],
+    },
+    提瓦特美食札记: {
+      keyword: ['提瓦特美食札记'],
+      include: [11473, 12502],
+      exclude: [],
+    },
+    生日贺图: {
+      keyword: ['生日贺图', /生日.*快乐/],
+      include: [10016],
+      exclude: [24417],
+    },
+    同人绘画作品征集: {
+      keyword: ['同人绘画作品征集'],
+      include: [],
+      exclude: [],
+    },
+    问题说明: {
+      keyword: [/(问题|异常).*说明/],
+      include: [],
+      exclude: [],
+    },
+    音乐会: {
+      keyword: ['音乐会'],
+      include: [],
+      exclude: [],
+    },
+    OST信息: {
+      keyword: ['音乐专辑', 'OST'],
+      include: [],
+      exclude: [],
+    },
+    EP: {
+      keyword: ['音乐动态视频', 'EP'],
+      include: [],
+      exclude: [],
+    },
+    版本PV: {
+      keyword: ['版本PV'],
+      include: [],
+      exclude: [],
+    },
+    前瞻预告: {
+      keyword: [/特别节目.*即将开启/, '前瞻直播预告', '前瞻特别节目预告'],
+      include: [],
+      exclude: [],
+    },
+    前瞻回顾长图: {
+      keyword: [/(前瞻|特别节目).*回顾长图/],
+      include: [],
+      exclude: [],
+    },
+    前瞻特别节目: {
+      keyword: ['特别节目'],
+      include: [11442],
+      exclude: [],
+    },
+    版本更新说明: {
+      keyword: ['更新通知', '更新说明', '更新维护预告'],
+      include: [],
+      exclude: [],
+    },
+    版本专题页: {
+      keyword: ['内容专题页', '先行展示页'],
+      include: [],
+      exclude: [],
+    },
+    系统更新: {
+      keyword: ['新系统', '系统更新'],
+      include: [],
+      exclude: [],
+    },
+    预下载公告: {
+      keyword: ['预下载'],
+      include: [],
+      exclude: [],
+    },
+    幕后花絮: {
+      keyword: ['的幕后'],
+      include: [],
+      exclude: [],
+    },
+    沙雕广告: {
+      keyword: ['原来你也玩原神'],
+      include: [],
+      exclude: [],
+    },
+    漫画: {
+      keyword: ['条漫', '四格漫画'],
+      include: [],
+      exclude: [],
+    },
+    声优小剧场: {
+      keyword: ['声优小剧场'],
+      include: [],
+      exclude: [],
+    },
+    寻味之旅: {
+      keyword: ['寻味之旅'],
+      include: [],
+      exclude: [],
+    },
+    PV短片: {
+      keyword: ['PV短片'],
+      include: [],
+      exclude: [],
+    },
+    风物集短片: {
+      keyword: ['风物集短片'],
+      include: [],
+      exclude: [],
+    },
+    CM短片: {
+      keyword: ['CM'],
+      include: [],
+      exclude: [],
+    },
+    衣装PV: {
+      keyword: ['衣装PV'],
+      include: [],
+      exclude: [],
+    },
+    过场动画: {
+      keyword: ['过场动画'],
+      include: [],
+      exclude: [],
+    },
+    剧情PV: {
+      keyword: ['剧情PV'],
+      include: [],
+      exclude: [],
+    },
+    角色PV: {
+      keyword: ['全新角色预告', /角色.*预告PV/, '角色PV'],
+      include: [],
+      exclude: [],
+    },
+    角色演示: {
+      keyword: ['全新角色展示', '角色演示'],
+      include: [],
+      exclude: [],
+    },
+    拾枝杂谈: {
+      keyword: ['拾枝杂谈'],
+      include: [],
+      exclude: [],
+    },
+    玩法介绍: {
+      keyword: ['小贴士', '玩法介绍', '玩法说明', '玩法小贴士'],
+      include: [],
+      exclude: [],
+    },
+    开发组座谈会: {
+      keyword: ['开发组座谈会'],
+      include: [],
+      exclude: [],
+    },
+    开发者共研计划: {
+      keyword: ['开发者共研计划'],
+      include: [],
+      exclude: [],
+    },
+    传说任务说明: {
+      keyword: ['传说任务说明', '传说任务即将开启'],
+      include: [],
+      exclude: [],
+    },
+    主线任务说明: {
+      keyword: [/魔神任务.*即将开启/, /开启.*魔神任务/],
+      include: [],
+      exclude: [],
+    },
+    联动信息: {
+      keyword: ['×原神', 'x 原神', '原神×', '原神 x', '联名', '联动'],
+      include: [28470],
+      exclude: [],
+    },
+    周边信息: {
+      keyword: ['周边上新', '原神旗舰店'],
+      include: [],
+      exclude: [],
+    },
+    网页活动: {
+      keyword: ['H5'],
+      include: [],
+      exclude: [],
+    },
+    FAQ: {
+      keyword: ['FAQ'],
+      include: [],
+      exclude: [],
+    },
+    PV: {
+      keyword: ['PV'],
+      include: [],
+      exclude: [14282, 14353],
+    },
+    活动: {
+      keyword: ['活动'],
+      include: [],
+      exclude: [],
+    },
+  }
 
-  if (title.includes('音乐会'))
-    return '音乐会'
-  if (title.includes('音乐专辑'))
-    return 'OST信息'
-  if (title.includes('OST'))
-    return 'OST信息'
-  if (title.includes('音乐动态视频'))
-    return 'EP'
-  if (title.includes('EP'))
-    return 'EP'
-
-  if (title.includes('版本PV'))
-    return '版本PV'
-  if (title.match(/特别节目.*即将开启/))
-    return '前瞻预告'
-  if (title.includes('前瞻直播预告'))
-    return '前瞻预告'
-  if (title.includes('前瞻特别节目预告'))
-    return '前瞻预告'
-  if (title.match(/(前瞻|特别节目).*回顾长图/))
-    return '前瞻回顾长图'
-  if (title.includes('特别节目'))
-    return '前瞻特别节目'
-  if (title.includes('前瞻直播回顾'))
-    return '前瞻特别节目'
-
-  if (title.includes('更新通知'))
-    return '版本更新说明'
-  if (title.includes('更新说明'))
-    return '版本更新说明'
-  if (title.includes('更新维护预告'))
-    return '版本更新说明'
-
-  if (title.includes('内容专题页'))
-    return '版本专题页'
-  if (title.includes('先行展示页'))
-    return '版本专题页'
-  if (title.includes('新系统'))
-    return '系统更新'
-  if (title.includes('系统更新'))
-    return '系统更新'
-
-  if (title.includes('预下载'))
-    return '预下载公告'
-
-  if (title.includes('幕后'))
-    return '幕后花絮'
-  if (title.includes('原来你也玩原神'))
-    return '沙雕广告'
-  if (title.includes('条漫'))
-    return '漫画'
-  if (title.includes('四格漫画'))
-    return '漫画'
-  if (title.includes('声优小剧场'))
-    return '声优小剧场'
-  if (title.includes('寻味之旅'))
-    return '寻味之旅'
-  if (title.includes('风物集短片'))
-    return 'PV短片'
-  if (title.includes('PV短片'))
-    return 'PV短片'
-  if (title.includes('CM'))
-    return 'CM短片'
-  if (title.includes('衣装PV'))
-    return '衣装PV'
-  if (title.includes('过场动画'))
-    return '过场动画'
-  if (title.includes('剧情PV'))
-    return '剧情PV'
-  if (title.includes('幕间PV'))
-    return '剧情PV'
-  if (title.includes('序曲PV'))
-    return '剧情PV'
-  if (title.includes('全新角色预告'))
-    return '角色PV'
-  if (title.match(/角色.*预告PV/))
-    return '角色PV'
-  if (title.includes('角色PV'))
-    return '角色PV'
-  if (title.includes('全新角色展示'))
-    return '角色演示'
-  if (title.includes('角色演示'))
-    return '角色演示'
-  if (title.includes('拾枝杂谈'))
-    return '拾枝杂谈'
-
-  if (title.includes('小贴士'))
-    return '玩法介绍'
-  if (title.includes('玩法介绍'))
-    return '玩法介绍'
-  if (title.includes('玩法说明'))
-    return '玩法介绍'
-  if (title.includes('玩法小贴士'))
-    return '玩法介绍'
-
-  if (title.includes('开发组座谈会'))
-    return '开发组座谈会'
-  if (title.includes('开发者共研计划'))
-    return '开发者共研计划'
-
-  if (title.includes('传说任务说明'))
-    return '传说任务说明'
-  if (title.includes('传说任务即将开启'))
-    return '传说任务说明'
-
-  if (title.match(/魔神任务.*即将开启/))
-    return '主线任务说明'
-  if (title.match(/开启.*魔神任务/))
-    return '主线任务说明'
-
-  if (title.includes('×原神') || title.includes('x 原神'))
-    return '联动信息'
-  if (title.includes('原神×') || title.includes('原神 x'))
-    return '联动信息'
-  if (title.includes('联名'))
-    return '联动信息'
-  if (title.includes('联动'))
-    return '联动信息'
-
-  if (title.includes('周边上新'))
-    return '周边信息'
-  if (title.includes('原神旗舰店'))
-    return '周边信息'
-
-  if (title.includes('H5'))
-    return '网页活动'
-
-  if (title.includes('FAQ'))
-    return 'FAQ'
-
-  if (title.includes('PV') && !title.includes('活动'))
-    return 'PV'
-  if (title.includes('活动'))
-    return '活动'
+  for (const [type, rule] of Object.entries(rules)) {
+    if (rule.include.includes(id))
+      return type
+    if (rule.exclude.includes(id))
+      continue
+    for (const keyword of rule.keyword) {
+      if (typeof keyword === 'string') {
+        if (title.includes(keyword))
+          return type
+      }
+      else if (keyword instanceof RegExp) {
+        if (keyword.test(title))
+          return type
+      }
+    }
+  }
   return '其他'
 }
 
