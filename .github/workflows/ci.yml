@@ -14,15 +14,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Enable corepack
+        run: corepack enable
       
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
-          cache: 'yarn'
+          cache: 'pnpm'
       
       - name: Build
-        run: yarn && yarn build
+        run: pnpm i && pnpm build
       
       - name: Deploy to Github Pages
         uses: peaceiris/actions-gh-pages@v3
