@@ -351,6 +351,16 @@ function getNewsType(title: string, id: number): string {
     exclude: number[]
   }
   const rules: { [index: string]: Rule } = {
+    网页活动: {
+      keyword: ['H5'],
+      include: [],
+      exclude: [],
+    },
+    新区域展示页: {
+      keyword: ['新区域展示页'],
+      include: [],
+      exclude: [],
+    },
     武器活动祈愿: {
       keyword: ['神铸赋形'],
       include: [],
@@ -392,7 +402,7 @@ function getNewsType(title: string, id: number): string {
       exclude: [],
     },
     问题说明: {
-      keyword: [/(问题|异常).*说明/],
+      keyword: [/(问题|异常|补偿|回退|维护|调整).*说明/],
       include: [],
       exclude: [],
     },
@@ -452,7 +462,7 @@ function getNewsType(title: string, id: number): string {
       exclude: [],
     },
     幕后花絮: {
-      keyword: ['的幕后'],
+      keyword: ['的幕后', '合作幕后'],
       include: [],
       exclude: [],
     },
@@ -483,6 +493,11 @@ function getNewsType(title: string, id: number): string {
     },
     风物集短片: {
       keyword: ['风物集短片'],
+      include: [],
+      exclude: [],
+    },
+    流光拾遗之旅: {
+      keyword: ['流光拾遗之旅'],
       include: [],
       exclude: [],
     },
@@ -549,15 +564,10 @@ function getNewsType(title: string, id: number): string {
     联动信息: {
       keyword: ['×原神', 'x 原神', '原神×', '原神 x', '联名', '联动'],
       include: [28470],
-      exclude: [],
+      exclude: [28785],
     },
     周边信息: {
       keyword: ['周边上新', '原神旗舰店'],
-      include: [],
-      exclude: [],
-    },
-    网页活动: {
-      keyword: ['H5'],
       include: [],
       exclude: [],
     },
