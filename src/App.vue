@@ -146,42 +146,10 @@
             </div>
           </a>
         </li>
-        <li
+        <NewsItem
           v-for="news in itemRenderList" :key="news.contentId"
-          :style="{
-            transform: `translateY(${news.top}px)`,
-          }"
-          class="absolute w-full mb-2"
-        >
-          <a
-            :href="`https://ys.mihoyo.com/main/news/detail/${news.contentId}`"
-            :title="news.title"
-            class="flex p-3 transition-colors bg-white border-2 border-transparent rounded-md hover:border-blue-500 group"
-            target="_blank"
-          >
-            <img
-              v-if="showBanner" :src="getBanner(news.ext)"
-              class="w-[150px] h-[75px] md:w-[300px] md:h-[150px] object-cover mr-4 rounded-md" alt="banner"
-            >
-            <div class="flex-1 overflow-hidden">
-              <h2
-                :title="news.title"
-                class="w-full overflow-hidden text-lg font-bold transition-colors group-hover:text-blue-500 whitespace-nowrap overflow-ellipsis"
-              >
-                {{ news.title }}
-              </h2>
-              <div class="text-sm">
-                新闻ID: {{ news.contentId }}
-              </div>
-              <div class="text-sm">
-                新闻类型: {{ news.tag }}
-              </div>
-              <div class="text-sm">
-                发布时间: {{ news.start_time }}
-              </div>
-            </div>
-          </a>
-        </li>
+          :news="news" :show-banner="showBanner"
+        />
       </ul>
     </div>
   </div>
@@ -191,34 +159,11 @@
 import { useElementBounding, useThrottle } from '@vueuse/core'
 import { useToast } from 'vue-toastification'
 import Switch from './components/Switch.vue'
-
-interface ExtValue {
-  name: string
-  url: string
-}
-
-interface NewsExt {
-  arrtName: string
-  keyId: number
-  value: string | ExtValue[]
-}
-
-interface NewsData {
-  contentId: string
-  title: string
-  ext: NewsExt[]
-  tag: string
-  start_time: string
-}
-
-interface NewsItem extends NewsData {
-  top: number
-}
+import NewsItem from './components/NewsItem.vue'
 
 const APP_ABBR = 'GNS'
 const NEWS_API = 'https://api.amarea.cn/ys/news'
 const NEWS_REFRESH_API = 'https://api.amarea.cn/ys/news?force_refresh=1'
-const DEFAULT_BANNER = 'https://icdn.amarea.cn/upload/2023/06/6491c83b6fa65.jpg'
 
 const toast = useToast()
 
@@ -268,10 +213,10 @@ const filteredNewsData = computed(() => {
   }
 
   data.forEach((v, i) => {
-    (v as NewsItem).top = (itemHeight.value + 8) * i
+    (v as NewsItemData).top = (itemHeight.value + 8) * i
   })
 
-  return data as NewsItem[]
+  return data as NewsItemData[]
 })
 
 const itemRenderList = computed(() => {
@@ -281,7 +226,7 @@ const itemRenderList = computed(() => {
   }
   const renderRangeTop = -containerTop.value - renderRange.up * window.innerHeight
   const renderRangeBottom = -containerTop.value + window.innerHeight + renderRange.down * window.innerHeight
-  return filteredNewsData.value.filter((item: NewsItem) => {
+  return filteredNewsData.value.filter((item: NewsItemData) => {
     return (item.top + itemHeight.value > renderRangeTop && item.top < renderRangeBottom)
   })
 })
@@ -332,16 +277,6 @@ function fetchData(force_refresh = false) {
     .finally(() => {
       loading.value = false
     })
-}
-
-function getBanner(exts: NewsExt[]): string {
-  for (const ext of exts) {
-    if (ext.arrtName === 'banner' && Array.isArray(ext.value)) {
-      if (ext.value.length > 0)
-        return ext.value[0].url
-    }
-  }
-  return DEFAULT_BANNER
 }
 
 function getNewsType(title: string, id: number): string {
