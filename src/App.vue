@@ -157,6 +157,7 @@
 
 <script setup lang="ts">
 import { useElementBounding, useThrottle } from '@vueuse/core'
+import { SettingType, Settings } from '@orilight/vue-settings'
 import { useToast } from 'vue-toastification'
 import Switch from './components/Switch.vue'
 import NewsItem from './components/NewsItem.vue'
@@ -164,6 +165,7 @@ import NewsItem from './components/NewsItem.vue'
 const APP_ABBR = 'GNS'
 const NEWS_API = 'https://api.amarea.cn/ys/news'
 const NEWS_REFRESH_API = 'https://api.amarea.cn/ys/news?force_refresh=1'
+const settings = new Settings(APP_ABBR)
 
 const toast = useToast()
 
@@ -180,7 +182,6 @@ const showSetting = ref(false)
 const showBanner = ref(true)
 const sortNews = ref(false)
 const loading = ref(false)
-const configLoaded = ref(false)
 
 const searchEnabled = computed(() => searchStr.value.trim() !== '')
 
@@ -232,17 +233,9 @@ const itemRenderList = computed(() => {
 })
 
 onMounted(() => {
-  showBanner.value = (localStorage.getItem(`${APP_ABBR}_showBanner`) || 'true') === 'true'
-  sortNews.value = localStorage.getItem(`${APP_ABBR}_sortNews`) === 'true'
-  configLoaded.value = true
+  settings.register('showBanner', showBanner, SettingType.Bool)
+  settings.register('sortNews', sortNews, SettingType.Bool)
   fetchData()
-})
-
-watchEffect(() => {
-  if (!configLoaded.value)
-    return
-  localStorage.setItem(`${APP_ABBR}_showBanner`, showBanner.value.toString())
-  localStorage.setItem(`${APP_ABBR}_sortNews`, sortNews.value.toString())
 })
 
 function fetchData(force_refresh = false) {

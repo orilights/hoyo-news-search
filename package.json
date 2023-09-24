@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@orilight/vue-settings": "^1.1.0",
     "@vueuse/core": "^10.2.0",
     "vue": "^3.3.4",
     "vue-toastification": "^2.0.0-rc.5"
