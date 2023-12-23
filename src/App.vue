@@ -65,7 +65,7 @@
           :class="{
             '!text-white !bg-blue-500 !border-blue-500': filterTag === tag,
           }"
-          @click="filterTag = filterTag === tag ? '全部' : tag"
+          @click="handleClickTag(tag)"
         >
           {{ tag }} {{ tags[tag] }}
         </li>
@@ -156,7 +156,7 @@
 </template>
 
 <script setup lang="ts">
-import { useElementBounding, useThrottle } from '@vueuse/core'
+import { useElementBounding, useThrottle, useUrlSearchParams } from '@vueuse/core'
 import { SettingType, Settings } from '@orilight/vue-settings'
 import { useToast } from 'vue-toastification'
 import Switch from './components/Switch.vue'
@@ -176,6 +176,7 @@ const container = ref<HTMLElement>()
 const shadowItem = ref<HTMLElement>()
 const containerTop = useThrottle(useElementBounding(container).top, 30, true)
 const itemHeight = useElementBounding(shadowItem).height
+const params = useUrlSearchParams('history')
 const filterTag = ref('全部')
 const searchStr = ref('')
 const showSetting = ref(false)
@@ -194,11 +195,12 @@ const filteredNewsData = computed(() => {
       ),
     )
   }
-
   else if (filterTag.value === '全部') {
     data = newsData.value.slice()
   }
-
+  else if (!Object.keys(tags.value).includes(filterTag.value)) {
+    data = newsData.value.slice()
+  }
   else {
     data = newsData.value.filter(news => news.tag === filterTag.value)
   }
@@ -236,6 +238,8 @@ onMounted(() => {
   settings.register('showBanner', showBanner, SettingType.Bool)
   settings.register('sortNews', sortNews, SettingType.Bool)
   fetchData()
+  if (params.filterTag)
+    filterTag.value = params.filterTag as string
 })
 
 function fetchData(force_refresh = false) {
@@ -270,6 +274,18 @@ function fetchData(force_refresh = false) {
     .finally(() => {
       loading.value = false
     })
+}
+
+function handleClickTag(tag: string) {
+  if (filterTag.value === tag) {
+    filterTag.value = '全部'
+    if (params.filterTag)
+      delete params.filterTag
+  }
+  else {
+    filterTag.value = tag
+    params.filterTag = tag
+  }
 }
 
 function getNewsType(title: string, id: number): string {
