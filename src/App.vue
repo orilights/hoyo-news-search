@@ -161,10 +161,9 @@ import { SettingType, Settings } from '@orilight/vue-settings'
 import { useToast } from 'vue-toastification'
 import Switch from './components/Switch.vue'
 import NewsItem from './components/NewsItem.vue'
+import { APP_ABBR, NEWS_API, NEWS_REFRESH_API } from './constants'
+import { Rules } from './constants/rule'
 
-const APP_ABBR = 'GNS'
-const NEWS_API = 'https://api.amarea.cn/ys/news'
-const NEWS_REFRESH_API = 'https://api.amarea.cn/ys/news?force_refresh=1'
 const settings = new Settings(APP_ABBR)
 
 const toast = useToast()
@@ -255,13 +254,13 @@ function fetchData(force_refresh = false) {
       }
       const newsList = data.newsData
       tags.value['全部'] = newsList.length
-      newsList.forEach((element: any) => {
-        const _type = getNewsType(element.title, Number(element.contentId))
-        if (tags.value[_type] === undefined)
-          tags.value[_type] = 1
+      newsList.forEach((news: any) => {
+        const tag = getNewsType(news.title, Number(news.contentId))
+        if (tags.value[tag] === undefined)
+          tags.value[tag] = 1
         else
-          tags.value[_type] += 1
-        element.tag = _type
+          tags.value[tag] += 1
+        news.tag = tag
       })
       newsData.value = newsList
       newsUpdateTime.value = data.updateTime
@@ -289,250 +288,7 @@ function handleClickTag(tag: string) {
 }
 
 function getNewsType(title: string, id: number): string {
-  interface Rule {
-    keyword: (string | RegExp)[]
-    include: number[]
-    exclude: number[]
-  }
-  const rules: { [index: string]: Rule } = {
-    壁纸: {
-      keyword: ['壁纸'],
-      include: [],
-      exclude: [],
-    },
-    网页活动: {
-      keyword: ['H5', '网页活动'],
-      include: [],
-      exclude: [],
-    },
-    新区域展示页: {
-      keyword: ['新区域展示页'],
-      include: [],
-      exclude: [],
-    },
-    武器活动祈愿: {
-      keyword: ['神铸赋形'],
-      include: [],
-      exclude: [],
-    },
-    角色活动祈愿: {
-      keyword: ['祈愿即将开启', '祈愿现已开启', '活动祈愿'],
-      include: [],
-      exclude: [],
-    },
-    表情包: {
-      keyword: ['表情包'],
-      include: [],
-      exclude: [],
-    },
-    签到活动: {
-      keyword: ['签到活动'],
-      include: [],
-      exclude: [],
-    },
-    提瓦特美食札记: {
-      keyword: ['提瓦特美食札记'],
-      include: [11473, 12502],
-      exclude: [],
-    },
-    生日贺图: {
-      keyword: ['生日贺图', /生日.*快乐/],
-      include: [10016],
-      exclude: [24417],
-    },
-    同人绘画作品征集: {
-      keyword: ['同人绘画作品征集'],
-      include: [],
-      exclude: [],
-    },
-    问题说明: {
-      keyword: [/(问题|异常|补偿|回退|维护|调整).*说明/],
-      include: [],
-      exclude: [],
-    },
-    音乐会: {
-      keyword: ['音乐会'],
-      include: [],
-      exclude: [],
-    },
-    OST信息: {
-      keyword: ['音乐专辑', 'OST'],
-      include: [],
-      exclude: [],
-    },
-    EP: {
-      keyword: ['音乐动态视频', 'EP'],
-      include: [],
-      exclude: [],
-    },
-    版本PV: {
-      keyword: ['版本PV'],
-      include: [],
-      exclude: [],
-    },
-    前瞻预告: {
-      keyword: [/特别节目.*即将开启/, '前瞻直播预告', '前瞻特别节目预告'],
-      include: [],
-      exclude: [],
-    },
-    前瞻回顾长图: {
-      keyword: [/(前瞻|特别节目).*回顾长图/],
-      include: [],
-      exclude: [],
-    },
-    前瞻特别节目: {
-      keyword: ['特别节目'],
-      include: [11442],
-      exclude: [],
-    },
-    版本更新说明: {
-      keyword: ['更新通知', '更新说明', '更新维护预告'],
-      include: [],
-      exclude: [],
-    },
-    版本专题页: {
-      keyword: ['内容专题页', '先行展示页'],
-      include: [],
-      exclude: [],
-    },
-    系统更新: {
-      keyword: ['新系统', '系统更新'],
-      include: [],
-      exclude: [],
-    },
-    预下载公告: {
-      keyword: ['预下载'],
-      include: [],
-      exclude: [],
-    },
-    幕后花絮: {
-      keyword: ['的幕后', '合作幕后'],
-      include: [],
-      exclude: [],
-    },
-    沙雕广告: {
-      keyword: ['原来你也玩原神'],
-      include: [],
-      exclude: [],
-    },
-    漫画: {
-      keyword: ['条漫', '四格漫画'],
-      include: [],
-      exclude: [],
-    },
-    声优小剧场: {
-      keyword: ['声优小剧场'],
-      include: [],
-      exclude: [],
-    },
-    寻味之旅: {
-      keyword: ['寻味之旅'],
-      include: [],
-      exclude: [],
-    },
-    PV短片: {
-      keyword: ['PV短片'],
-      include: [],
-      exclude: [],
-    },
-    风物集短片: {
-      keyword: ['风物集短片'],
-      include: [],
-      exclude: [],
-    },
-    流光拾遗之旅: {
-      keyword: ['流光拾遗之旅'],
-      include: [],
-      exclude: [],
-    },
-    CM短片: {
-      keyword: ['CM'],
-      include: [],
-      exclude: [],
-    },
-    衣装PV: {
-      keyword: ['衣装PV'],
-      include: [],
-      exclude: [],
-    },
-    过场动画: {
-      keyword: ['过场动画'],
-      include: [],
-      exclude: [],
-    },
-    剧情PV: {
-      keyword: ['剧情PV'],
-      include: [],
-      exclude: [],
-    },
-    角色PV: {
-      keyword: ['全新角色预告', /角色.*预告PV/, '角色PV'],
-      include: [],
-      exclude: [],
-    },
-    角色演示: {
-      keyword: ['全新角色展示', '角色演示'],
-      include: [],
-      exclude: [],
-    },
-    拾枝杂谈: {
-      keyword: ['拾枝杂谈'],
-      include: [],
-      exclude: [],
-    },
-    玩法介绍: {
-      keyword: ['小贴士', '玩法介绍', '玩法说明', '玩法小贴士'],
-      include: [],
-      exclude: [],
-    },
-    开发组座谈会: {
-      keyword: ['开发组座谈会'],
-      include: [],
-      exclude: [],
-    },
-    开发者共研计划: {
-      keyword: ['开发者共研计划'],
-      include: [],
-      exclude: [],
-    },
-    传说任务说明: {
-      keyword: ['传说任务说明', '传说任务即将开启'],
-      include: [],
-      exclude: [],
-    },
-    主线任务说明: {
-      keyword: [/魔神任务.*即将开启/, /开启.*魔神任务/],
-      include: [],
-      exclude: [],
-    },
-    联动信息: {
-      keyword: ['×原神', 'x 原神', '原神×', '原神 x', '联名', '联动'],
-      include: [28470],
-      exclude: [28785],
-    },
-    周边信息: {
-      keyword: ['周边上新', '原神旗舰店'],
-      include: [],
-      exclude: [],
-    },
-    FAQ: {
-      keyword: ['FAQ'],
-      include: [],
-      exclude: [],
-    },
-    PV: {
-      keyword: ['PV'],
-      include: [],
-      exclude: [14282, 14353],
-    },
-    活动: {
-      keyword: ['活动'],
-      include: [],
-      exclude: [],
-    },
-  }
-
-  for (const [type, rule] of Object.entries(rules)) {
+  for (const [type, rule] of Object.entries(Rules)) {
     if (rule.include.includes(id))
       return type
     if (rule.exclude.includes(id))
