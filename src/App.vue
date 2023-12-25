@@ -295,8 +295,13 @@ function getNewsType(title: string, id: number): string {
     exclude: number[]
   }
   const rules: { [index: string]: Rule } = {
+    壁纸: {
+      keyword: ['壁纸'],
+      include: [],
+      exclude: [],
+    },
     网页活动: {
-      keyword: ['H5'],
+      keyword: ['H5', '网页活动'],
       include: [],
       exclude: [],
     },
@@ -312,11 +317,6 @@ function getNewsType(title: string, id: number): string {
     },
     角色活动祈愿: {
       keyword: ['祈愿即将开启', '祈愿现已开启', '活动祈愿'],
-      include: [],
-      exclude: [],
-    },
-    壁纸: {
-      keyword: ['壁纸'],
       include: [],
       exclude: [],
     },
