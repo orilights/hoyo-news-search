@@ -181,7 +181,7 @@ const filterTag = ref('全部')
 const searchStr = ref('')
 const showSetting = ref(false)
 const showBanner = ref(true)
-const sortNews = ref(false)
+const sortNews = ref(true)
 const loading = ref(false)
 
 const searchEnabled = computed(() => searchStr.value.trim() !== '')
