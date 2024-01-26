@@ -1,3 +1,5 @@
+# 原神官网更换了新 API，旧 API 数据已停止更新且新闻ID无法对应，之后有空适配一下
+
 # 原神官网新闻检索
 
 ![preview](docs/preview.png)
