@@ -6,7 +6,7 @@
     class="absolute w-full mb-2"
   >
     <a
-      :href="`https://ys.mihoyo.com/main/news/detail/${news.contentId}`"
+      :href="NEWS_DETAIL[game].replace('{id}', String(news.id))"
       :title="news.title"
       class="flex p-3 transition-colors bg-white border-2 border-transparent rounded-md hover:border-blue-500 group"
       target="_blank"
@@ -52,7 +52,7 @@
         <Transition name="fade">
           <img
             v-show="imageLoaded"
-            :src="loadImage ? getBanner(news.ext) : ''"
+            :src="loadImage ? (news.banner || DEFAULT_BANNER) : ''"
             class="w-full h-full object-cover rounded-md absolute" alt="banner"
             @load="imageLoaded = true"
           >
@@ -66,13 +66,13 @@
           {{ news.title }}
         </h2>
         <div class="text-sm">
-          新闻ID: {{ news.contentId }}
+          新闻ID: {{ news.id }}
         </div>
         <div class="text-sm">
           新闻类型: {{ news.tag }}
         </div>
         <div class="text-sm">
-          发布时间: {{ news.start_time }}
+          发布时间: {{ news.startTime }}
         </div>
       </div>
     </a>
@@ -83,8 +83,14 @@
 defineProps<{
   news: NewsItemData
   showBanner: boolean
+  game: string
 }>()
 
+const NEWS_DETAIL: Record<string, string> = {
+  genshin: 'https://ys.mihoyo.com/main/news/detail/{id}',
+  starrail: 'https://sr.mihoyo.com/news/{id}',
+  honkai3: 'https://bh3.mihoyo.com/news/693/{id}',
+}
 const DEFAULT_BANNER = 'https://icdn.amarea.cn/upload/2023/06/6491c83b6fa65.jpg'
 const LOAD_DELAY = 300
 
@@ -103,16 +109,6 @@ onUnmounted(() => {
   if (timer)
     clearTimeout(timer)
 })
-
-function getBanner(exts: NewsExt[]): string {
-  for (const ext of exts) {
-    if (ext.arrtName === 'banner' && Array.isArray(ext.value)) {
-      if (ext.value.length > 0)
-        return ext.value[0].url
-    }
-  }
-  return DEFAULT_BANNER
-}
 </script>
 
 <style>

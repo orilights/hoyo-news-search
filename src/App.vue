@@ -8,6 +8,20 @@
           @mouseleave="showSetting = false"
         >
           <div class="flex items-center my-1">
+            <span class="flex-1 mr-2">新闻源</span>
+            <select v-model="source" @change="handleSourceChange">
+              <option value="genshin">
+                原神
+              </option>
+              <option value="starrail">
+                崩坏：星穹铁道
+              </option>
+              <option value="honkai3">
+                崩坏3
+              </option>
+            </select>
+          </div>
+          <div class="flex items-center my-1">
             <span class="flex-1">显示Banner图片</span> <Switch v-model="showBanner" class="ml-2" />
           </div>
           <div class="flex items-center my-1">
@@ -56,9 +70,9 @@
       </div>
       <input
         v-model="searchStr" type="text" placeholder="搜些什么吧"
-        class="w-full px-4 py-2 transition-colors border rounded-full hover:border-blue-500 outline-blue-500"
+        class="w-full px-4 py-2 mb-4 transition-colors border rounded-full hover:border-blue-500 outline-blue-500"
       >
-      <ul v-show="!searchEnabled" class="flex flex-wrap gap-1 py-4">
+      <ul v-show="!searchEnabled" class="flex flex-wrap gap-1 mb-4">
         <li
           v-for="tag in Object.keys(tags).sort((a, b) => tags[b] - tags[a])" :key="tag"
           class="inline-block px-3 py-1 text-sm transition-colors border border-gray-400 rounded-full cursor-pointer hover:text-blue-500 hover:border-blue-400"
@@ -147,8 +161,8 @@
           </a>
         </li>
         <NewsItem
-          v-for="news in itemRenderList" :key="news.contentId"
-          :news="news" :show-banner="showBanner"
+          v-for="news in itemRenderList" :key="news.id"
+          :news="news" :show-banner="showBanner" :game="source"
         />
       </ul>
     </div>
@@ -177,6 +191,7 @@ const containerTop = useThrottle(useElementBounding(container).top, 30, true)
 const itemHeight = useElementBounding(shadowItem).height
 const params = useUrlSearchParams('history')
 const filterTag = ref('全部')
+const source = ref('genshin')
 const searchStr = ref('')
 const showSetting = ref(false)
 const showBanner = ref(true)
@@ -206,10 +221,10 @@ const filteredNewsData = computed(() => {
 
   if (sortNews.value) {
     data = data.sort((a, b) => {
-      const bt = new Date(b.start_time).getTime()
-      const at = new Date(a.start_time).getTime()
+      const bt = new Date(b.startTime).getTime()
+      const at = new Date(a.startTime).getTime()
       if (bt === at)
-        return Number(b.contentId) - Number(a.contentId)
+        return Number(b.id) - Number(a.id)
       return bt - at
     })
   }
@@ -236,16 +251,18 @@ const itemRenderList = computed(() => {
 onMounted(() => {
   settings.register('showBanner', showBanner, SettingType.Bool)
   settings.register('sortNews', sortNews, SettingType.Bool)
-  fetchData()
   if (params.filterTag)
     filterTag.value = params.filterTag as string
+  if (params.source)
+    source.value = params.source as string
+  fetchData()
 })
 
 function fetchData(force_refresh = false) {
   loading.value = true
   newsData.value = []
   tags.value = {}
-  fetch(force_refresh ? NEWS_REFRESH_API : NEWS_API)
+  fetch((force_refresh ? NEWS_REFRESH_API : NEWS_API).replace('{game}', source.value))
     .then(res => res.json())
     .then((data) => {
       if (data.code !== 0) {
@@ -272,7 +289,6 @@ function fetchData(force_refresh = false) {
     })
     .finally(() => {
       loading.value = false
-      toast.info('原神官网更换了新 API，旧 API 数据已停止更新且新闻ID无法对应，之后有空适配一下', { timeout: 30000 })
     })
 }
 
@@ -288,7 +304,14 @@ function handleClickTag(tag: string) {
   }
 }
 
+function handleSourceChange() {
+  params.source = source.value
+  fetchData()
+}
+
 function getNewsType(title: string, id: number): string {
+  if (source.value !== 'genshin')
+    return '其他'
   for (const [type, rule] of Object.entries(Rules)) {
     if (rule.include.includes(id))
       return type

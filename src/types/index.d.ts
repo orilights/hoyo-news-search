@@ -1,23 +1,13 @@
 export {}
 
 declare global {
-  interface ExtValue {
-    name: string
-    url: string
-  }
-
-  interface NewsExt {
-    arrtName: string
-    keyId: number
-    value: string | ExtValue[]
-  }
-
   interface NewsData {
-    contentId: string
+    id: number
     title: string
-    ext: NewsExt[]
+    startTime: string
+    createTime: string
     tag: string
-    start_time: string
+    banner: string
   }
 
   interface NewsItemData extends NewsData {
