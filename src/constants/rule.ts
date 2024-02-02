@@ -34,28 +34,18 @@ export const Rules: { [index: string]: Rule } = {
     include: [],
     exclude: [],
   },
-  签到活动: {
-    keyword: ['签到活动'],
-    include: [],
-    exclude: [],
-  },
   提瓦特美食札记: {
     keyword: ['提瓦特美食札记'],
-    include: [11473, 12502],
+    include: [116321, 116345, 116353, 116362, 116381],
     exclude: [],
   },
   生日贺图: {
     keyword: ['生日贺图', /生日.*快乐/],
-    include: [10016],
-    exclude: [24417],
+    include: [116277],
+    exclude: [117793],
   },
   同人绘画作品征集: {
     keyword: ['同人绘画作品征集'],
-    include: [],
-    exclude: [],
-  },
-  问题说明: {
-    keyword: [/(问题|异常|补偿|回退|维护|调整).*说明/],
     include: [],
     exclude: [],
   },
@@ -64,13 +54,8 @@ export const Rules: { [index: string]: Rule } = {
     include: [],
     exclude: [],
   },
-  OST信息: {
-    keyword: ['音乐专辑', 'OST'],
-    include: [],
-    exclude: [],
-  },
   EP: {
-    keyword: ['音乐动态视频', 'EP'],
+    keyword: ['音乐动态视频', '《原神》EP'],
     include: [],
     exclude: [],
   },
@@ -81,7 +66,7 @@ export const Rules: { [index: string]: Rule } = {
   },
   前瞻预告: {
     keyword: [/特别节目.*即将开启/, '前瞻直播预告', '前瞻特别节目预告'],
-    include: [],
+    include: [118577, 118573],
     exclude: [],
   },
   前瞻回顾长图: {
@@ -89,9 +74,9 @@ export const Rules: { [index: string]: Rule } = {
     include: [],
     exclude: [],
   },
-  前瞻特别节目: {
+  前瞻直播: {
     keyword: ['特别节目'],
-    include: [11442],
+    include: [116318],
     exclude: [],
   },
   版本更新说明: {
@@ -101,11 +86,6 @@ export const Rules: { [index: string]: Rule } = {
   },
   版本专题页: {
     keyword: ['内容专题页', '先行展示页'],
-    include: [],
-    exclude: [],
-  },
-  系统更新: {
-    keyword: ['新系统', '系统更新'],
     include: [],
     exclude: [],
   },
@@ -175,8 +155,8 @@ export const Rules: { [index: string]: Rule } = {
     exclude: [],
   },
   角色PV: {
-    keyword: ['全新角色预告', /角色.*预告PV/, '角色PV'],
-    include: [],
+    keyword: [/角色.*预告PV/, '角色PV'],
+    include: [116213],
     exclude: [],
   },
   角色演示: {
@@ -216,27 +196,17 @@ export const Rules: { [index: string]: Rule } = {
   },
   联动信息: {
     keyword: ['×原神', 'x 原神', '原神×', '原神 x', '联名', '联动'],
-    include: [28470],
-    exclude: [28785],
+    include: [118376],
+    exclude: [118466],
   },
   周边信息: {
     keyword: ['周边上新', '原神旗舰店'],
     include: [],
     exclude: [],
   },
-  FAQ: {
-    keyword: ['FAQ'],
-    include: [],
-    exclude: [],
-  },
   PV: {
     keyword: ['PV'],
     include: [],
-    exclude: [14282, 14353],
-  },
-  活动: {
-    keyword: ['活动'],
-    include: [],
-    exclude: [],
+    exclude: [116497, 116506],
   },
 }

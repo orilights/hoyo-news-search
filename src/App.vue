@@ -272,7 +272,7 @@ function fetchData(force_refresh = false) {
       const newsList = data.newsData
       tags.value['全部'] = newsList.length
       newsList.forEach((news: any) => {
-        const tag = getNewsType(news.title, Number(news.contentId))
+        const tag = getNewsType(news.title, news.id)
         if (tags.value[tag] === undefined)
           tags.value[tag] = 1
         else
