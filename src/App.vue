@@ -315,6 +315,8 @@ function getNewsType(title: string, id: number): string {
   for (const [type, rule] of Object.entries(Rules)) {
     if (rule.include.includes(id))
       return type
+  }
+  for (const [type, rule] of Object.entries(Rules)) {
     if (rule.exclude.includes(id))
       continue
     for (const keyword of rule.keyword) {

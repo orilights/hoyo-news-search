@@ -14,6 +14,11 @@ export const Rules: { [index: string]: Rule } = {
     include: [],
     exclude: [],
   },
+  OST: {
+    keyword: [/OST.*上线/],
+    include: [],
+    exclude: [],
+  },
   新区域展示页: {
     keyword: ['新区域展示页'],
     include: [],
@@ -21,6 +26,11 @@ export const Rules: { [index: string]: Rule } = {
   },
   武器活动祈愿: {
     keyword: ['神铸赋形'],
+    include: [],
+    exclude: [],
+  },
+  集录祈愿: {
+    keyword: ['集录祈愿'],
     include: [],
     exclude: [],
   },
@@ -60,7 +70,7 @@ export const Rules: { [index: string]: Rule } = {
     exclude: [],
   },
   版本PV: {
-    keyword: ['版本PV'],
+    keyword: [/\d\.\d版本PV/],
     include: [],
     exclude: [],
   },
@@ -155,8 +165,8 @@ export const Rules: { [index: string]: Rule } = {
     exclude: [],
   },
   角色PV: {
-    keyword: [/角色.*预告PV/, '角色PV'],
-    include: [116213],
+    keyword: ['角色PV'],
+    include: [116213, 116322],
     exclude: [],
   },
   角色演示: {
