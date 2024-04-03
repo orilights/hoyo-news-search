@@ -99,6 +99,11 @@ export const Rules: { [index: string]: Rule } = {
     include: [],
     exclude: [],
   },
+  版本活动速递: {
+    keyword: ['版本活动速递'],
+    include: [],
+    exclude: [],
+  },
   预下载公告: {
     keyword: ['预下载'],
     include: [],
