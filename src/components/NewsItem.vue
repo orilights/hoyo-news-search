@@ -69,7 +69,7 @@
           新闻ID: {{ news.id }}
         </div>
         <div class="text-sm">
-          新闻类型: {{ news.tag }}
+          新闻类型: {{ news.tag }} <span v-if="news.video" class="text-blue-500 font-bold" @click.stop.prevent="copyToClipboard(news.video)">存在视频</span>
         </div>
         <div class="text-sm">
           发布时间: {{ news.startTime }}
@@ -80,6 +80,8 @@
 </template>
 
 <script setup lang="ts">
+import { useToast } from 'vue-toastification'
+
 defineProps<{
   news: NewsItemData
   showBanner: boolean
@@ -90,6 +92,7 @@ const NEWS_DETAIL: Record<string, string> = {
   genshin: 'https://ys.mihoyo.com/main/news/detail/{id}',
   starrail: 'https://sr.mihoyo.com/news/{id}',
   honkai3: 'https://bh3.mihoyo.com/news/693/{id}',
+  zzz: 'https://zzz.mihoyo.com/news/{id}',
 }
 const DEFAULT_BANNER = 'https://icdn.amarea.cn/upload/2023/06/6491c83b6fa65.jpg'
 const LOAD_DELAY = 300
@@ -109,6 +112,16 @@ onUnmounted(() => {
   if (timer)
     clearTimeout(timer)
 })
+
+function copyToClipboard(text: string) {
+  const input = document.createElement('input')
+  input.value = text
+  document.body.appendChild(input)
+  input.select()
+  document.execCommand('copy')
+  document.body.removeChild(input)
+  useToast().success('已复制视频链接')
+}
 </script>
 
 <style>

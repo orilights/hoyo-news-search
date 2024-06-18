@@ -8,6 +8,7 @@ declare global {
     createTime: string
     tag: string
     banner: string
+    video: string | null
   }
 
   interface NewsItemData extends NewsData {

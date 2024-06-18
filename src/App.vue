@@ -19,6 +19,9 @@
               <option value="honkai3">
                 崩坏3
               </option>
+              <option value="zzz">
+                绝区零
+              </option>
             </select>
           </div>
           <div class="flex items-center my-1">
@@ -32,10 +35,10 @@
 
       <div class="flex items-center justify-between">
         <h1 class="py-6 text-4xl font-bold">
-          原神官网新闻检索
+          米哈游官网新闻检索
         </h1>
         <div class="flex gap-4">
-          <a href="https://github.com/orilights/genshin-news-search" target="_blank">
+          <a href="https://github.com/orilights/hoyo-news-search" target="_blank">
             <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 1024 1024" stroke="currentColor" class="w-6 h-6">
               <path d="M511.6 76.3C264.3 76.2 64 276.4 64 523.5 64 718.9 189.3 885 363.8 946c23.5 5.9 19.9-10.8 19.9-22.2v-77.5c-135.7 15.9-141.2-73.9-150.3-88.9C215 726 171.5 718 184.5 703c30.9-15.9 62.4 4 98.9 57.9 26.4 39.1 77.9 32.5 104 26 5.7-23.5 17.9-44.5 34.7-60.8-140.6-25.2-199.2-111-199.2-213 0-49.5 16.3-95 48.3-131.7-20.4-60.5 1.9-112.3 4.9-120 58.1-5.2 118.5 41.6 123.2 45.3 33-8.9 70.7-13.6 112.9-13.6 42.4 0 80.2 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.3-43.9 2.9 7.7 24.7 58.3 5.5 118 32.4 36.8 48.9 82.7 48.9 132.3 0 102.2-59 188.1-200 212.9 23.5 23.2 38.1 55.4 38.1 91v112.5c0.8 9 0 17.9 15 17.9 177.1-59.7 304.6-227 304.6-424.1 0-247.2-200.4-447.3-447.5-447.3z" />
             </svg>
@@ -48,14 +51,14 @@
         </div>
       </div>
 
-      <div class="flex items-center mb-2">
+      <div class="flex items-center mb-2 flex-wrap">
         数据更新于：
         <template v-if="loading">
           加载中
         </template>
         <template v-else>
           {{ formatTime(newsUpdateTime) }}
-          <button class="ml-2 hover:text-blue-500" @click="fetchData(true)">
+          <button class="ml-2 flex items-center hover:text-blue-500" @click="fetchData(true)">
             <svg
               xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
               stroke="currentColor" class="w-4 h-4"
@@ -65,6 +68,9 @@
                 d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
               />
             </svg>
+            <span class="ml-1 text-sm">
+              数据存在缓存可能为非最新，点击此处可尝试刷新数据
+            </span>
           </button>
         </template>
       </div>
@@ -141,7 +147,7 @@
               alt="banner"
             >
             <div class="flex-1 overflow-hidden">
-              <a href="https://ys.mihoyo.com/main/news/detail/" target="_blank">
+              <a href="" target="_blank">
                 <h2
                   class="w-full overflow-hidden text-lg font-bold transition-colors group-hover:text-blue-500 whitespace-nowrap overflow-ellipsis"
                 >
@@ -212,6 +218,9 @@ const filteredNewsData = computed(() => {
   else if (filterTag.value === '全部') {
     data = newsData.value.slice()
   }
+  else if (filterTag.value === '视频') {
+    data = newsData.value.filter(news => news.video)
+  }
   else if (!Object.keys(tags.value).includes(filterTag.value)) {
     data = newsData.value.slice()
   }
@@ -255,6 +264,9 @@ onMounted(() => {
     filterTag.value = params.filterTag as string
   if (params.source)
     source.value = params.source as string
+  nextTick(() => {
+    toast.info('点击右上角可切换新闻源')
+  })
   fetchData()
 })
 
@@ -271,7 +283,10 @@ function fetchData(force_refresh = false) {
       }
       const newsList = data.newsData
       tags.value['全部'] = newsList.length
+      tags.value['视频'] = 0
       newsList.forEach((news: any) => {
+        if (news.video)
+          tags.value['视频'] += 1
         const tag = getNewsType(news.title, news.id)
         if (tags.value[tag] === undefined)
           tags.value[tag] = 1
@@ -293,15 +308,15 @@ function fetchData(force_refresh = false) {
 }
 
 function handleClickTag(tag: string) {
-  if (filterTag.value === tag) {
+  if (filterTag.value === tag)
     filterTag.value = '全部'
-    if (params.filterTag)
-      delete params.filterTag
-  }
-  else {
+  else
     filterTag.value = tag
-    params.filterTag = tag
-  }
+
+  if (filterTag.value === '全部')
+    delete params.filterTag
+  else
+    params.filterTag = filterTag.value
 }
 
 function handleSourceChange() {
@@ -310,13 +325,13 @@ function handleSourceChange() {
 }
 
 function getNewsType(title: string, id: number): string {
-  if (source.value !== 'genshin')
+  if (!Object.keys(Rules).includes(source.value))
     return '其他'
-  for (const [type, rule] of Object.entries(Rules)) {
+  for (const [type, rule] of Object.entries(Rules[source.value])) {
     if (rule.include.includes(id))
       return type
   }
-  for (const [type, rule] of Object.entries(Rules)) {
+  for (const [type, rule] of Object.entries(Rules[source.value])) {
     if (rule.exclude.includes(id))
       continue
     for (const keyword of rule.keyword) {
