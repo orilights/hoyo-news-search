@@ -30,6 +30,9 @@
           <div class="flex items-center my-1">
             <span class="flex-1">根据发布时间排序</span> <Switch v-model="sortNews" class="ml-2" />
           </div>
+          <button class="border px-2 py-0.5 hover:border-blue-500 transition-colors rounded-md" @click="exportVideos">
+            导出本页视频至 aria2 任务
+          </button>
         </div>
       </Transition>
 
@@ -359,6 +362,21 @@ function formatTime(timestamp: number) {
   const minute = String(date.getMinutes()).padStart(2, '0')
   const second = String(date.getSeconds()).padStart(2, '0')
   return `${year}-${month}-${day} ${hour}:${minute}:${second}`
+}
+
+function exportVideos() {
+  let result = ''
+  filteredNewsData.value.filter(news => news.video).forEach((news: any) => {
+    const fileExt = news.video.split('.').pop()
+    result += `${news.video}\n  out=${news.title}.${fileExt}\n`
+  })
+  const blob = new Blob([result], { type: 'text/plain' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'videos.txt'
+  a.click()
+  URL.revokeObjectURL(url)
 }
 </script>
 
