@@ -8,12 +8,12 @@
     <a
       :href="NEWS_DETAIL[game].replace('{id}', String(news.id))"
       :title="news.title"
-      class="flex p-3 transition-colors bg-white border-2 border-transparent rounded-md hover:border-blue-500 group"
+      class="flex p-2 sm:p-3 transition-colors bg-white border-2 border-transparent rounded-md hover:border-blue-500 group"
       target="_blank"
     >
       <div
         v-if="showBanner"
-        class="w-[150px] h-[75px] md:w-[300px] md:h-[150px] mr-4 relative flex items-center justify-center"
+        class="w-[75px] h-[75px] sm:w-[150px] md:w-[300px] md:h-[150px] mr-2 md:mr-4 relative flex items-center justify-center"
       >
         <svg
           v-if="!imageLoaded"
@@ -54,21 +54,21 @@
             v-show="imageLoaded"
             :src="loadImage ? (news.banner || DEFAULT_BANNER) : ''"
             class="w-full h-full object-cover rounded-md absolute" alt="banner"
-            @load="imageLoaded = true"
+            @load="imageLoaded = true;state.imageLoaded.add(game + String(news.id))"
           >
         </Transition>
       </div>
       <div class="flex-1 overflow-hidden">
         <h2
           :title="news.title"
-          class="w-full overflow-hidden text-lg font-bold transition-colors group-hover:text-blue-500 whitespace-nowrap overflow-ellipsis"
+          class="w-full overflow-hidden md:text-lg font-bold transition-colors group-hover:text-blue-500 whitespace-nowrap overflow-ellipsis"
         >
           {{ news.title }}
         </h2>
         <div class="text-sm">
           新闻ID: {{ news.id }}
         </div>
-        <div class="text-sm">
+        <div class="text-sm whitespace-nowrap overflow-ellipsis">
           新闻类型: {{ news.tag }} <span v-if="news.video" class="text-blue-500 font-bold" @click.stop.prevent="copyToClipboard(news.video)">存在视频</span>
         </div>
         <div class="text-sm">
@@ -81,8 +81,9 @@
 
 <script setup lang="ts">
 import { useToast } from 'vue-toastification'
+import { state } from '@/state'
 
-defineProps<{
+const props = defineProps<{
   news: NewsItemData
   showBanner: boolean
   game: string
@@ -102,6 +103,10 @@ const loadImage = ref(false)
 const imageLoaded = ref(false)
 
 onMounted(() => {
+  if (state.imageLoaded.has(props.game + props.news.id)) {
+    loadImage.value = true
+    return
+  }
   timer = setTimeout(() => {
     loadImage.value = true
     timer = null

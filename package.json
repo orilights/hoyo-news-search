@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "vue-tsc && vite build",
-    "dev": "vite",
+    "dev": "vite --host",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx,.vue .",
     "preview": "vite preview"
   },

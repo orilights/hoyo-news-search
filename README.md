@@ -4,7 +4,6 @@
 <summary>界面截图</summary>
 <img src="docs/preview.png" alt="preview" />
 </details>
-<br>
 
 一个用于检索米哈游旗下游戏官网新闻的小工具  
 在线访问：[news.hk4e.com](https://news.hk4e.com/)

@@ -4,8 +4,7 @@
       <Transition name="popup">
         <div
           v-show="showSetting"
-          class="absolute top-[75px] right-0 bg-white p-4 rounded-lg shadow-md"
-          @mouseleave="showSetting = false"
+          class="setting absolute top-[75px] right-0 bg-white p-4 rounded-lg shadow-md"
         >
           <div class="flex items-center my-1">
             <span class="flex-1 mr-2">新闻源</span>
@@ -37,7 +36,7 @@
       </Transition>
 
       <div class="flex items-center justify-between">
-        <h1 class="py-6 text-4xl font-bold">
+        <h1 class="py-6 text-2xl sm:text-4xl font-bold">
           米哈游官网新闻检索
         </h1>
         <div class="flex gap-4">
@@ -46,7 +45,7 @@
               <path d="M511.6 76.3C264.3 76.2 64 276.4 64 523.5 64 718.9 189.3 885 363.8 946c23.5 5.9 19.9-10.8 19.9-22.2v-77.5c-135.7 15.9-141.2-73.9-150.3-88.9C215 726 171.5 718 184.5 703c30.9-15.9 62.4 4 98.9 57.9 26.4 39.1 77.9 32.5 104 26 5.7-23.5 17.9-44.5 34.7-60.8-140.6-25.2-199.2-111-199.2-213 0-49.5 16.3-95 48.3-131.7-20.4-60.5 1.9-112.3 4.9-120 58.1-5.2 118.5 41.6 123.2 45.3 33-8.9 70.7-13.6 112.9-13.6 42.4 0 80.2 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.3-43.9 2.9 7.7 24.7 58.3 5.5 118 32.4 36.8 48.9 82.7 48.9 132.3 0 102.2-59 188.1-200 212.9 23.5 23.2 38.1 55.4 38.1 91v112.5c0.8 9 0 17.9 15 17.9 177.1-59.7 304.6-227 304.6-424.1 0-247.2-200.4-447.3-447.5-447.3z" />
             </svg>
           </a>
-          <button @click="showSetting = !showSetting">
+          <button class="setting" @click="showSetting = !showSetting">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
               <path fill-rule="evenodd" d="M11.828 2.25c-.916 0-1.699.663-1.85 1.567l-.091.549a.798.798 0 01-.517.608 7.45 7.45 0 00-.478.198.798.798 0 01-.796-.064l-.453-.324a1.875 1.875 0 00-2.416.2l-.243.243a1.875 1.875 0 00-.2 2.416l.324.453a.798.798 0 01.064.796 7.448 7.448 0 00-.198.478.798.798 0 01-.608.517l-.55.092a1.875 1.875 0 00-1.566 1.849v.344c0 .916.663 1.699 1.567 1.85l.549.091c.281.047.508.25.608.517.06.162.127.321.198.478a.798.798 0 01-.064.796l-.324.453a1.875 1.875 0 00.2 2.416l.243.243c.648.648 1.67.733 2.416.2l.453-.324a.798.798 0 01.796-.064c.157.071.316.137.478.198.267.1.47.327.517.608l.092.55c.15.903.932 1.566 1.849 1.566h.344c.916 0 1.699-.663 1.85-1.567l.091-.549a.798.798 0 01.517-.608 7.52 7.52 0 00.478-.198.798.798 0 01.796.064l.453.324a1.875 1.875 0 002.416-.2l.243-.243c.648-.648.733-1.67.2-2.416l-.324-.453a.798.798 0 01-.064-.796c.071-.157.137-.316.198-.478.1-.267.327-.47.608-.517l.55-.091a1.875 1.875 0 001.566-1.85v-.344c0-.916-.663-1.699-1.567-1.85l-.549-.091a.798.798 0 01-.608-.517 7.507 7.507 0 00-.198-.478.798.798 0 01.064-.796l.324-.453a1.875 1.875 0 00-.2-2.416l-.243-.243a1.875 1.875 0 00-2.416-.2l-.453.324a.798.798 0 01-.796.064 7.462 7.462 0 00-.478-.198.798.798 0 01-.517-.608l-.091-.55a1.875 1.875 0 00-1.85-1.566h-.344zM12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clip-rule="evenodd" />
             </svg>
@@ -60,8 +59,10 @@
           加载中
         </template>
         <template v-else>
-          {{ formatTime(newsUpdateTime) }}
-          <button class="ml-2 flex items-center hover:text-blue-500" @click="fetchData(true)">
+          <span class="mr-2">
+            {{ formatTime(newsUpdateTime) }}
+          </span>
+          <button class="flex items-center hover:text-blue-500" @click="fetchData(true)">
             <svg
               xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
               stroke="currentColor" class="w-4 h-4"
@@ -72,7 +73,7 @@
               />
             </svg>
             <span class="ml-1 text-sm">
-              数据存在缓存可能为非最新，点击此处可尝试刷新数据
+              数据可能为非最新，点击此处可尝试刷新数据
             </span>
           </button>
         </template>
@@ -84,7 +85,7 @@
       <ul v-show="!searchEnabled" class="flex flex-wrap gap-1 mb-4">
         <li
           v-for="tag in Object.keys(tags).sort((a, b) => tags[b] - tags[a])" :key="tag"
-          class="inline-block px-3 py-1 text-sm transition-colors border border-gray-400 rounded-full cursor-pointer hover:text-blue-500 hover:border-blue-400"
+          class="inline-block px-2 md:px-3 py-0.5 md:py-1 text-xs md:text-sm transition-colors border border-gray-400 rounded-full cursor-pointer hover:text-blue-500 hover:border-blue-400"
           :class="{
             '!text-white !bg-blue-500 !border-blue-500': filterTag === tag,
           }"
@@ -94,7 +95,7 @@
         </li>
       </ul>
 
-      <div v-show="searchEnabled" class="py-2">
+      <div v-show="searchEnabled" class="pb-4">
         <span class="pr-4">
           搜索结果：{{ filteredNewsData.length }}
         </span>
@@ -137,38 +138,10 @@
           height: `${filteredNewsData.length * (itemHeight + 8) - 8}px`,
         }"
       >
-        <li
+        <NewsItem
           ref="shadowItem"
-          class="absolute w-full mb-2 translate-x-[9999px] translate-y-[9999px] opacity-0"
-        >
-          <a
-            class="flex p-3 transition-colors bg-white border-2 border-transparent rounded-md hover:border-blue-500 group"
-          >
-            <img
-              v-if="showBanner"
-              class="w-[150px] h-[75px] md:w-[300px] md:h-[150px] object-cover mr-4 rounded-md"
-              alt="banner"
-            >
-            <div class="flex-1 overflow-hidden">
-              <a href="" target="_blank">
-                <h2
-                  class="w-full overflow-hidden text-lg font-bold transition-colors group-hover:text-blue-500 whitespace-nowrap overflow-ellipsis"
-                >
-                  Shadow
-                </h2>
-              </a>
-              <div class="text-sm">
-                新闻ID: Shadow
-              </div>
-              <div class="text-sm">
-                新闻类型: Shadow
-              </div>
-              <div class="text-sm">
-                发布时间: 2023-06-13 18:02:00
-              </div>
-            </div>
-          </a>
-        </li>
+          :news="shadowItemData" :show-banner="showBanner" :game="source"
+        />
         <NewsItem
           v-for="news in itemRenderList" :key="news.id"
           :news="news" :show-banner="showBanner" :game="source"
@@ -206,6 +179,16 @@ const showSetting = ref(false)
 const showBanner = ref(true)
 const sortNews = ref(true)
 const loading = ref(false)
+const shadowItemData = {
+  id: -1,
+  title: 'ShadowShadowShadowShadowShadowShadow',
+  startTime: '2024-01-01 12:00:00',
+  createTime: '2024-01-01 12:00:00',
+  tag: 'ShadowShadowShadowShadowShadowShadow',
+  banner: '',
+  video: null,
+  top: -9999999,
+}
 
 const searchEnabled = computed(() => searchStr.value.trim() !== '')
 
@@ -261,6 +244,13 @@ const itemRenderList = computed(() => {
 })
 
 onMounted(() => {
+  document.addEventListener('click', (event) => {
+    if (!showSetting.value)
+      return
+
+    if ((event.target as HTMLElement).closest('.setting') === null)
+      showSetting.value = false
+  })
   settings.register('showBanner', showBanner, SettingType.Bool)
   settings.register('sortNews', sortNews, SettingType.Bool)
   if (params.filterTag)
@@ -383,12 +373,12 @@ function exportVideos() {
 <style>
 .popup-enter-active,
 .popup-leave-active {
-  transition: all .3s;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .popup-enter-from,
 .popup-leave-to {
   opacity: 0;
-  transform: translateY(10px)
+  transform: translate(10px, -10px) scale(0.9);
 }
 </style>
