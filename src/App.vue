@@ -9,17 +9,8 @@
           <div class="flex items-center my-1">
             <span class="flex-1 mr-2">新闻源</span>
             <select v-model="source" @change="handleSourceChange">
-              <option value="genshin">
-                原神
-              </option>
-              <option value="starrail">
-                崩坏：星穹铁道
-              </option>
-              <option value="honkai3">
-                崩坏3
-              </option>
-              <option value="zzz">
-                绝区零
+              <option v-for="[game_id, game] in Object.entries(NEWS_LIST)" :key="game_id" :value="game_id">
+                {{ game.displayName }}
               </option>
             </select>
           </div>
@@ -155,10 +146,9 @@
 import { useElementBounding, useThrottle, useUrlSearchParams } from '@vueuse/core'
 import { SettingType, Settings } from '@orilight/vue-settings'
 import { useToast } from 'vue-toastification'
-import Switch from './components/Switch.vue'
-import NewsItem from './components/NewsItem.vue'
-import { APP_ABBR, NEWS_API, NEWS_REFRESH_API } from './constants'
-import { Rules } from './constants/rule'
+import { APP_ABBR, NEWS_API, NEWS_CLASSIFY_RULE, NEWS_LIST, NEWS_REFRESH_API } from '@/constants'
+import Switch from '@/components/Switch.vue'
+import NewsItem from '@/components/NewsItem.vue'
 
 const settings = new Settings(APP_ABBR)
 
@@ -318,13 +308,13 @@ function handleSourceChange() {
 }
 
 function getNewsType(title: string, id: number): string {
-  if (!Object.keys(Rules).includes(source.value))
+  if (!Object.keys(NEWS_CLASSIFY_RULE).includes(source.value))
     return '其他'
-  for (const [type, rule] of Object.entries(Rules[source.value])) {
+  for (const [type, rule] of Object.entries(NEWS_CLASSIFY_RULE[source.value])) {
     if (rule.include.includes(id))
       return type
   }
-  for (const [type, rule] of Object.entries(Rules[source.value])) {
+  for (const [type, rule] of Object.entries(NEWS_CLASSIFY_RULE[source.value])) {
     if (rule.exclude.includes(id))
       continue
     for (const keyword of rule.keyword) {

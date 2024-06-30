@@ -1,9 +1,4 @@
-export interface Rule {
-  keyword: (string | RegExp)[]
-  include: number[]
-  exclude: number[]
-}
-export const Rules: Record<string, Record<string, Rule>> = {
+export const NEWS_CLASSIFY_RULE: Record<string, Record<string, ClassifyRule>> = {
   genshin: {
     壁纸: {
       keyword: ['壁纸'],

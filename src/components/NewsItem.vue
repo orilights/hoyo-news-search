@@ -6,7 +6,7 @@
     class="absolute w-full mb-2"
   >
     <a
-      :href="NEWS_DETAIL[game].replace('{id}', String(news.id))"
+      :href="NEWS_LIST[game].newsDetailLink.replace('{id}', String(news.id))"
       :title="news.title"
       class="flex p-2 sm:p-3 transition-colors bg-white border-2 border-transparent rounded-md hover:border-blue-500 group"
       target="_blank"
@@ -82,6 +82,7 @@
 <script setup lang="ts">
 import { useToast } from 'vue-toastification'
 import { state } from '@/state'
+import { NEWS_LIST } from '@/constants'
 
 const props = defineProps<{
   news: NewsItemData
@@ -89,12 +90,6 @@ const props = defineProps<{
   game: string
 }>()
 
-const NEWS_DETAIL: Record<string, string> = {
-  genshin: 'https://ys.mihoyo.com/main/news/detail/{id}',
-  starrail: 'https://sr.mihoyo.com/news/{id}',
-  honkai3: 'https://bh3.mihoyo.com/news/693/{id}',
-  zzz: 'https://zzz.mihoyo.com/news/{id}',
-}
 const DEFAULT_BANNER = 'https://icdn.amarea.cn/upload/2023/06/6491c83b6fa65.jpg'
 const LOAD_DELAY = 300
 

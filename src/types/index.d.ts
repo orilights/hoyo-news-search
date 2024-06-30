@@ -1,4 +1,4 @@
-export {}
+export { }
 
 declare global {
   interface NewsData {
@@ -13,5 +13,16 @@ declare global {
 
   interface NewsItemData extends NewsData {
     top: number
+  }
+
+  interface GameInfo {
+    displayName: string,
+    newsDetailLink: string,
+  }
+
+  interface ClassifyRule {
+    keyword: (string | RegExp)[]
+    include: number[]
+    exclude: number[]
   }
 }
