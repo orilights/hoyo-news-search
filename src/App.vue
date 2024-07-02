@@ -224,12 +224,12 @@ function scrollTo(target: 'top' | 'bottom') {
   <div class="min-h-screen bg-gray-200">
     <div class="fixed bottom-4 right-4 z-10">
       <button class="block rounded-t-lg border border-gray-300 bg-white p-2 text-black hover:border-blue-500" @click="scrollTo('top')">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
         </svg>
       </button>
       <button class="block rounded-b-lg border border-gray-300 bg-white p-2 text-black hover:border-blue-500" @click="scrollTo('bottom')">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
           <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
         </svg>
       </button>
