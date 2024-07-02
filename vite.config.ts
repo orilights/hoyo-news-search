@@ -1,4 +1,5 @@
 import path from 'node:path'
+import process from 'node:process'
 import { defineConfig } from 'vite'
 import simpleHtmlPlugin from 'vite-plugin-simple-html'
 import vue from '@vitejs/plugin-vue'

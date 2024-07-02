@@ -16,8 +16,8 @@ declare global {
   }
 
   interface GameInfo {
-    displayName: string,
-    newsDetailLink: string,
+    displayName: string
+    newsDetailLink: string
   }
 
   interface ClassifyRule {
