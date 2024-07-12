@@ -136,7 +136,6 @@ function fetchData(force_refresh = false) {
       })
       newsData.value = newsList
       newsUpdateTime.value = data.updateTime
-      toast.success('获取新闻数据成功')
     })
     .catch((err) => {
       toast.error('获取新闻数据失败')
