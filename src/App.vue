@@ -19,7 +19,7 @@ const containerTop = useThrottle(useElementBounding(container).top, 30, true)
 const itemHeight = useElementBounding(shadowItem).height
 const params = useUrlSearchParams('history')
 const filterTag = ref('全部')
-const source = ref('genshin')
+const source = ref(Object.keys(NEWS_LIST)[0])
 const searchStr = ref('')
 const showSetting = ref(false)
 const showBanner = ref(true)
@@ -110,11 +110,15 @@ function fetchData(force_refresh = false) {
   loading.value = true
   newsData.value = []
   tags.value = {}
-  fetch((force_refresh ? NEWS_REFRESH_API : NEWS_API).replace('{game}', source.value))
+  const fetchSource = source.value
+  fetch((force_refresh ? NEWS_REFRESH_API : NEWS_API).replace('{game}', fetchSource))
     .then(res => res.json())
     .then((data) => {
       if (data.code !== 0) {
         toast.error(`服务器响应：${data.msg}`)
+        return
+      }
+      if (fetchSource !== source.value) {
         return
       }
       const newsList = data.newsData
