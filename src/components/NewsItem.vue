@@ -6,6 +6,7 @@ import { NEWS_LIST } from '@/constants'
 const props = defineProps<{
   news: NewsItemData
   showBanner: boolean
+  showDateWeek: boolean
   game: string
 }>()
 
@@ -40,6 +41,11 @@ function copyToClipboard(text: string) {
   document.execCommand('copy')
   document.body.removeChild(input)
   useToast().success('已复制视频链接')
+}
+
+function getWeek(date: string) {
+  const week = ['日', '一', '二', '三', '四', '五', '六']
+  return week[new Date(date).getDay()]
 }
 </script>
 
@@ -117,7 +123,7 @@ function copyToClipboard(text: string) {
           新闻类型: {{ news.tag }} <span v-if="news.video" class="font-bold text-blue-500" @click.stop.prevent="copyToClipboard(news.video)">存在视频</span>
         </div>
         <div class="text-sm">
-          发布时间: {{ news.startTime }}
+          发布时间: {{ news.startTime }} <span v-if="showDateWeek">星期{{ getWeek(news.startTime) }}</span>
         </div>
       </div>
     </a>

@@ -23,6 +23,7 @@ const source = ref(Object.keys(NEWS_LIST)[0])
 const searchStr = ref('')
 const showSetting = ref(false)
 const showBanner = ref(true)
+const showDateWeek = ref(false)
 const sortNews = ref(true)
 const loading = ref(false)
 const shadowItemData = {
@@ -99,6 +100,7 @@ onMounted(() => {
   })
   settings.register('showBanner', showBanner, SettingType.Bool)
   settings.register('sortNews', sortNews, SettingType.Bool)
+  settings.register('showDateWeek', showDateWeek, SettingType.Bool)
   if (params.filterTag)
     filterTag.value = params.filterTag as string
   if (params.source)
@@ -249,6 +251,9 @@ function scrollTo(target: 'top' | 'bottom') {
           <div class="my-1 flex items-center">
             <span class="flex-1">根据发布时间排序</span> <Switch v-model="sortNews" class="ml-2" />
           </div>
+          <div class="my-1 flex items-center">
+            <span class="flex-1">发布时间显示星期</span> <Switch v-model="showDateWeek" class="ml-2" />
+          </div>
           <button class="rounded-md border px-2 py-0.5 transition-colors hover:border-blue-500" @click="exportVideos">
             导出本页视频至 aria2 任务
           </button>
@@ -371,11 +376,17 @@ function scrollTo(target: 'top' | 'bottom') {
       >
         <NewsItem
           ref="shadowItem"
-          :news="shadowItemData" :show-banner="showBanner" :game="source"
+          :news="shadowItemData"
+          :show-banner="showBanner"
+          :show-date-week="showDateWeek"
+          :game="source"
         />
         <NewsItem
           v-for="news in itemRenderList" :key="news.id"
-          :news="news" :show-banner="showBanner" :game="source"
+          :news="news"
+          :show-banner="showBanner"
+          :show-date-week="showDateWeek"
+          :game="source"
         />
       </ul>
     </div>
