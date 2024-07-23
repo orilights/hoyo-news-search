@@ -2,7 +2,7 @@
 import { useElementBounding, useThrottle, useUrlSearchParams } from '@vueuse/core'
 import { SettingType, Settings } from '@orilight/vue-settings'
 import { useToast } from 'vue-toastification'
-import { APP_ABBR, NEWS_API, NEWS_CLASSIFY_RULE, NEWS_LIST, NEWS_REFRESH_API } from '@/constants'
+import { APP_ABBR, NEWS_CLASSIFY_RULE, NEWS_LIST } from '@/constants'
 import Switch from '@/components/Switch.vue'
 import NewsItem from '@/components/NewsItem.vue'
 
@@ -113,7 +113,7 @@ function fetchData(force_refresh = false) {
   newsData.value = []
   tags.value = {}
   const fetchSource = source.value
-  fetch((force_refresh ? NEWS_REFRESH_API : NEWS_API).replace('{game}', fetchSource))
+  fetch(NEWS_LIST[fetchSource].apiBase + (force_refresh ? '?force_refresh=1' : ''))
     .then(res => res.json())
     .then((data) => {
       if (data.code !== 0) {

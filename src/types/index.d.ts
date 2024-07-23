@@ -17,6 +17,7 @@ declare global {
 
   interface GameInfo {
     displayName: string
+    apiBase: string
     newsDetailLink: string
   }
 
