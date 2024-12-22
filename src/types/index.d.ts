@@ -7,7 +7,7 @@ declare global {
     startTime: string
     createTime: string
     tag: string
-    banner: string
+    cover: string
     video: string | null
   }
 
@@ -16,6 +16,13 @@ declare global {
   }
 
   interface GameInfo {
+    displayName: string
+    channals: {
+      [channalKey: string]: ChannelInfo
+    }
+  }
+
+  interface ChannelInfo {
     displayName: string
     apiBase: string
     newsDetailLink: string

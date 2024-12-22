@@ -8,6 +8,7 @@ const props = defineProps<{
   showBanner: boolean
   showDateWeek: boolean
   game: string
+  channal: string
 }>()
 
 const DEFAULT_BANNER = 'https://icdn.amarea.cn/upload/2023/06/6491c83b6fa65.jpg'
@@ -18,7 +19,7 @@ const loadImage = ref(false)
 const imageLoaded = ref(false)
 
 onMounted(() => {
-  if (state.imageLoaded.has(props.game + props.news.id)) {
+  if (state.imageLoaded.has(`${props.game}_${props.channal}_${props.news.id}`)) {
     loadImage.value = true
     return
   }
@@ -57,7 +58,7 @@ function getWeek(date: string) {
     class="absolute mb-2 w-full"
   >
     <a
-      :href="NEWS_LIST[game].newsDetailLink.replace('{id}', String(news.id))"
+      :href="NEWS_LIST[game].channals[channal].newsDetailLink.replace('{id}', String(news.id))"
       :title="news.title"
       class="group flex rounded-md border-2 border-transparent bg-white p-2 transition-colors hover:border-blue-500 sm:p-3"
       target="_blank"
@@ -103,7 +104,7 @@ function getWeek(date: string) {
         <Transition name="fade">
           <img
             v-show="imageLoaded"
-            :src="loadImage ? (news.banner || DEFAULT_BANNER) : ''"
+            :src="loadImage ? (news.cover || DEFAULT_BANNER) : ''"
             class="absolute size-full rounded-md object-cover" alt="banner"
             @load="imageLoaded = true;state.imageLoaded.add(game + String(news.id))"
           >

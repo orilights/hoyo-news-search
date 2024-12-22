@@ -2,7 +2,7 @@
 import { useElementBounding, useThrottle, useUrlSearchParams } from '@vueuse/core'
 import { SettingType, Settings } from '@orilight/vue-settings'
 import { useToast } from 'vue-toastification'
-import { APP_ABBR, NEWS_CLASSIFY_RULE, NEWS_LIST } from '@/constants'
+import { API_ENDPOINT, APP_ABBR, NEWS_CLASSIFY_RULE, NEWS_LIST } from '@/constants'
 import Switch from '@/components/Switch.vue'
 import NewsItem from '@/components/NewsItem.vue'
 
@@ -20,9 +20,10 @@ const itemHeight = useElementBounding(shadowItem).height
 const params = useUrlSearchParams('history')
 const filterTag = ref('全部')
 const source = ref(Object.keys(NEWS_LIST)[0])
+const channal = ref('')
 const searchStr = ref('')
 const showSetting = ref(false)
-const showBanner = ref(true)
+const showCover = ref(true)
 const showDateWeek = ref(false)
 const sortNews = ref(true)
 const loading = ref(false)
@@ -32,7 +33,7 @@ const shadowItemData = {
   startTime: '2024-01-01 12:00:00',
   createTime: '2024-01-01 12:00:00',
   tag: 'ShadowShadowShadowShadowShadowShadow',
-  banner: '',
+  cover: '',
   video: null,
   top: -9999999,
 }
@@ -98,49 +99,61 @@ onMounted(() => {
     if ((event.target as HTMLElement).closest('.setting') === null)
       showSetting.value = false
   })
-  settings.register('showBanner', showBanner, SettingType.Bool)
+  settings.register('showCover', showCover, SettingType.Bool)
   settings.register('sortNews', sortNews, SettingType.Bool)
   settings.register('showDateWeek', showDateWeek, SettingType.Bool)
   if (params.filterTag)
     filterTag.value = params.filterTag as string
   if (params.source)
     source.value = params.source as string
+  if (params.channal)
+    channal.value = params.channal as string
   fetchData()
 })
+
+watch(source, (val) => {
+  channal.value = Object.keys(NEWS_LIST[val].channals)[0]
+}, { immediate: true })
 
 function fetchData(force_refresh = false) {
   loading.value = true
   newsData.value = []
   tags.value = {}
   const fetchSource = source.value
-  fetch(NEWS_LIST[fetchSource].apiBase + (force_refresh ? '?force_refresh=1' : ''))
+  const fetchChannal = channal.value
+  fetch(`${NEWS_LIST[fetchSource].channals[fetchChannal].apiBase}/${fetchSource}/${fetchChannal}${force_refresh ? '?force_refresh=1' : ''}`)
     .then(res => res.json())
-    .then((data) => {
-      if (data.code !== 0) {
-        toast.error(`服务器响应：${data.msg}`)
+    .then((res) => {
+      if (fetchSource !== source.value || fetchChannal !== channal.value) {
         return
       }
-      if (fetchSource !== source.value) {
+      if (res.code !== 0) {
+        toast.error(`服务器响应：${res.msg}`)
         return
       }
-      const newsList = data.newsData
-      tags.value['全部'] = newsList.length
-      tags.value['视频'] = 0
-      newsList.forEach((news: any) => {
-        if (news.video)
-          tags.value['视频'] += 1
-        const tag = getNewsType(news.title, news.id)
-        if (tags.value[tag] === undefined)
-          tags.value[tag] = 1
-        else
-          tags.value[tag] += 1
-        news.tag = tag
-      })
-      newsData.value = newsList
-      newsUpdateTime.value = data.updateTime
+      if (res.data) {
+        const newsList = res.data
+        tags.value['全部'] = newsList.length
+        tags.value['视频'] = 0
+        newsList.forEach((news: any) => {
+          if (news.video)
+            tags.value['视频'] += 1
+          const tag = getNewsType(news.title, news.id)
+          if (tags.value[tag] === undefined)
+            tags.value[tag] = 1
+          else
+            tags.value[tag] += 1
+          news.tag = tag
+          if (typeof news.startTime === 'number')
+            news.startTime = formatTime(news.startTime)
+        })
+        newsData.value = newsList
+        newsUpdateTime.value = res.update
+      }
     })
     .catch((err) => {
-      toast.error('获取新闻数据失败')
+      toast.error('获取新闻数据失败，如有疑问请在 Github Issue 中提出')
+      newsUpdateTime.value = 0
       console.error(err)
     })
     .finally(() => {
@@ -162,6 +175,9 @@ function handleClickTag(tag: string) {
 
 function handleSourceChange() {
   params.source = source.value
+  params.channal = channal.value
+  filterTag.value = '全部'
+  delete params.filterTag
   fetchData()
 }
 
@@ -246,7 +262,7 @@ function scrollTo(target: 'top' | 'bottom') {
           class="setting absolute right-0 top-[75px] z-10 rounded-lg bg-white p-4 shadow-md"
         >
           <div class="my-1 flex items-center">
-            <span class="flex-1">显示Banner图片</span> <Switch v-model="showBanner" class="ml-2" />
+            <span class="flex-1">显示封面</span> <Switch v-model="showCover" class="ml-2" />
           </div>
           <div class="my-1 flex items-center">
             <span class="flex-1">根据发布时间排序</span> <Switch v-model="sortNews" class="ml-2" />
@@ -277,15 +293,27 @@ function scrollTo(target: 'top' | 'bottom') {
           </button>
         </div>
       </div>
-      <div class="flex items-center">
-        当前新闻源：
+      <div class="flex flex-wrap items-center">
+        新闻源：
         <select
           v-model="source"
           class="rounded-md border border-black/20 bg-transparent px-1"
+          :disabled="loading"
           @change="handleSourceChange"
         >
           <option v-for="[game_id, game] in Object.entries(NEWS_LIST)" :key="game_id" :value="game_id">
             {{ game.displayName }}
+          </option>
+        </select>
+
+        <select
+          v-model="channal"
+          class="my-1 ml-2 rounded-md border border-black/20 bg-transparent px-1"
+          :disabled="loading"
+          @change="handleSourceChange"
+        >
+          <option v-for="[channal_id, channal_info] in Object.entries(NEWS_LIST[source].channals)" :key="channal_id" :value="channal_id">
+            {{ channal_info.displayName }}
           </option>
         </select>
       </div>
@@ -377,16 +405,18 @@ function scrollTo(target: 'top' | 'bottom') {
         <NewsItem
           ref="shadowItem"
           :news="shadowItemData"
-          :show-banner="showBanner"
+          :show-banner="showCover"
           :show-date-week="showDateWeek"
           :game="source"
+          :channal="channal"
         />
         <NewsItem
           v-for="news in itemRenderList" :key="news.id"
           :news="news"
-          :show-banner="showBanner"
+          :show-banner="showCover"
           :show-date-week="showDateWeek"
           :game="source"
+          :channal="channal"
         />
       </ul>
     </div>
