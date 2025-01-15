@@ -33,4 +33,8 @@ declare global {
     include: number[]
     exclude: number[]
   }
+
+  interface GameClassifyRule {
+    [classifyKey: string]: ClassifyRule
+  }
 }

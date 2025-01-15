@@ -2,7 +2,7 @@
 import { useElementBounding, useThrottle, useUrlSearchParams } from '@vueuse/core'
 import { SettingType, Settings } from '@orilight/vue-settings'
 import { useToast } from 'vue-toastification'
-import { API_ENDPOINT, APP_ABBR, NEWS_CLASSIFY_RULE, NEWS_LIST } from '@/constants'
+import { APP_ABBR, NEWS_CLASSIFY_RULE, NEWS_LIST } from '@/constants'
 import Switch from '@/components/Switch.vue'
 import NewsItem from '@/components/NewsItem.vue'
 
