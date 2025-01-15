@@ -1,5 +1,5 @@
-import toastification from 'vue-toastification'
 import App from '@/App.vue'
+import toastification from 'vue-toastification'
 
 import '@/assets/tailwind.css'
 import 'vue-toastification/dist/index.css'

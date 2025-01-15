@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { useElementBounding, useThrottle, useUrlSearchParams } from '@vueuse/core'
-import { SettingType, Settings } from '@orilight/vue-settings'
-import { useToast } from 'vue-toastification'
-import { APP_ABBR, NEWS_CLASSIFY_RULE, NEWS_LIST } from '@/constants'
-import Switch from '@/components/Switch.vue'
 import NewsItem from '@/components/NewsItem.vue'
+import Switch from '@/components/Switch.vue'
+import { APP_ABBR, NEWS_CLASSIFY_RULE, NEWS_LIST, SHADOW_ITEM, TAG_ALL, TAG_OTHER, TAG_VIDEO } from '@/constants'
+import { Settings, SettingType } from '@orilight/vue-settings'
+import { useElementBounding, useThrottle, useUrlSearchParams } from '@vueuse/core'
+import { useToast } from 'vue-toastification'
 
 const settings = new Settings(APP_ABBR)
 
@@ -18,7 +18,7 @@ const shadowItem = ref<HTMLElement>()
 const containerTop = useThrottle(useElementBounding(container).top, 30, true)
 const itemHeight = useElementBounding(shadowItem).height
 const params = useUrlSearchParams('history')
-const filterTag = ref('全部')
+const filterTag = ref(TAG_ALL)
 const source = ref(Object.keys(NEWS_LIST)[0])
 const channal = ref('')
 const searchStr = ref('')
@@ -27,16 +27,6 @@ const showCover = ref(true)
 const showDateWeek = ref(false)
 const sortNews = ref(true)
 const loading = ref(false)
-const shadowItemData = {
-  id: -1,
-  title: 'ShadowShadowShadowShadowShadowShadow',
-  startTime: '2024-01-01 12:00:00',
-  createTime: '2024-01-01 12:00:00',
-  tag: 'ShadowShadowShadowShadowShadowShadow',
-  cover: '',
-  video: null,
-  top: -9999999,
-}
 
 const searchEnabled = computed(() => searchStr.value.trim() !== '')
 
@@ -49,10 +39,10 @@ const filteredNewsData = computed(() => {
       ),
     )
   }
-  else if (filterTag.value === '全部') {
+  else if (filterTag.value === TAG_ALL) {
     data = newsData.value.slice()
   }
-  else if (filterTag.value === '视频') {
+  else if (filterTag.value === TAG_VIDEO) {
     data = newsData.value.filter(news => news.video)
   }
   else if (!Object.keys(tags.value).includes(filterTag.value)) {
@@ -133,11 +123,11 @@ function fetchData(force_refresh = false) {
       }
       if (res.data) {
         const newsList = res.data
-        tags.value['全部'] = newsList.length
-        tags.value['视频'] = 0
+        tags.value[TAG_ALL] = newsList.length
+        tags.value[TAG_VIDEO] = 0
         newsList.forEach((news: any) => {
           if (news.video)
-            tags.value['视频'] += 1
+            tags.value[TAG_VIDEO] += 1
           const tag = getNewsType(news.title, news.id)
           if (tags.value[tag] === undefined)
             tags.value[tag] = 1
@@ -163,11 +153,11 @@ function fetchData(force_refresh = false) {
 
 function handleClickTag(tag: string) {
   if (filterTag.value === tag)
-    filterTag.value = '全部'
+    filterTag.value = TAG_ALL
   else
     filterTag.value = tag
 
-  if (filterTag.value === '全部')
+  if (filterTag.value === TAG_ALL)
     delete params.filterTag
   else
     params.filterTag = filterTag.value
@@ -176,14 +166,14 @@ function handleClickTag(tag: string) {
 function handleSourceChange() {
   params.source = source.value
   params.channal = channal.value
-  filterTag.value = '全部'
+  filterTag.value = TAG_ALL
   delete params.filterTag
   fetchData()
 }
 
 function getNewsType(title: string, id: number): string {
   if (!Object.keys(NEWS_CLASSIFY_RULE).includes(source.value))
-    return '其他'
+    return TAG_OTHER
   for (const [type, rule] of Object.entries(NEWS_CLASSIFY_RULE[source.value])) {
     if (rule.include.includes(id))
       return type
@@ -202,7 +192,7 @@ function getNewsType(title: string, id: number): string {
       }
     }
   }
-  return '其他'
+  return TAG_OTHER
 }
 
 function formatTime(timestamp: number) {
@@ -404,11 +394,12 @@ function scrollTo(target: 'top' | 'bottom') {
       >
         <NewsItem
           ref="shadowItem"
-          :news="shadowItemData"
+          :news="SHADOW_ITEM"
           :show-banner="showCover"
           :show-date-week="showDateWeek"
           :game="source"
           :channal="channal"
+          :style="{ pointerEvent: 'none', userSelect: 'none' }"
         />
         <NewsItem
           v-for="news in itemRenderList" :key="news.id"

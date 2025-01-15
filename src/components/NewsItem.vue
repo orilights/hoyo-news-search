@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useToast } from 'vue-toastification'
-import { state } from '@/state'
 import { NEWS_LIST } from '@/constants'
+import { state } from '@/state'
+import { useToast } from 'vue-toastification'
 
 const props = defineProps<{
   news: NewsItemData

@@ -35,6 +35,6 @@ declare global {
   }
 
   interface GameClassifyRule {
-    [classifyKey: string]: ClassifyRule
+    [classifyName: string]: ClassifyRule
   }
 }
