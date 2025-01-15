@@ -2,6 +2,7 @@ export * from './api'
 export * from './rule'
 
 export const APP_ABBR = 'GNS'
+
 export const SHADOW_ITEM = {
   id: -1,
   title: 'ShadowShadowShadowShadowShadowShadow',
@@ -12,6 +13,8 @@ export const SHADOW_ITEM = {
   video: null,
   top: -9999999,
 }
+export const DEFAULT_BANNER = 'https://icdn.amarea.cn/upload/2023/06/6491c83b6fa65.jpg'
+export const LOAD_DELAY = 300
 
 export const TAG_ALL = '全部'
 export const TAG_VIDEO = '视频'

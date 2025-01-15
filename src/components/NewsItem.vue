@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NEWS_LIST } from '@/constants'
+import { DEFAULT_BANNER, LOAD_DELAY, NEWS_LIST } from '@/constants'
 import { state } from '@/state'
 import { useToast } from 'vue-toastification'
 
@@ -11,15 +11,13 @@ const props = defineProps<{
   channal: string
 }>()
 
-const DEFAULT_BANNER = 'https://icdn.amarea.cn/upload/2023/06/6491c83b6fa65.jpg'
-const LOAD_DELAY = 300
-
 let timer: NodeJS.Timeout | null = null
 const loadImage = ref(false)
 const imageLoaded = ref(false)
+const imageKey = `${props.game}_${props.channal}_${props.news.id}`
 
 onMounted(() => {
-  if (state.imageLoaded.has(`${props.game}_${props.channal}_${props.news.id}`)) {
+  if (state.imageLoaded.has(imageKey)) {
     loadImage.value = true
     return
   }
@@ -34,7 +32,11 @@ onUnmounted(() => {
     clearTimeout(timer)
 })
 
-function copyToClipboard(text: string) {
+function openVideo(link: string) {
+  window.open(link, '_blank')
+}
+
+function copyVideoLink(text: string) {
   const input = document.createElement('input')
   input.value = text
   document.body.appendChild(input)
@@ -48,6 +50,11 @@ function getWeek(date: string) {
   const week = ['日', '一', '二', '三', '四', '五', '六']
   return week[new Date(date).getDay()]
 }
+
+function onImageLoaded() {
+  imageLoaded.value = true
+  state.imageLoaded.add(imageKey)
+}
 </script>
 
 <template>
@@ -60,7 +67,7 @@ function getWeek(date: string) {
     <a
       :href="NEWS_LIST[game].channals[channal].newsDetailLink.replace('{id}', String(news.id))"
       :title="news.title"
-      class="group flex rounded-md border-2 border-transparent bg-white p-2 transition-colors hover:border-blue-500 sm:p-3"
+      class="group flex rounded-md border-2 border-transparent bg-white p-2 transition-colors hover:border-blue-500 sm:p-3 "
       target="_blank"
     >
       <div
@@ -106,7 +113,8 @@ function getWeek(date: string) {
             v-show="imageLoaded"
             :src="loadImage ? (news.cover || DEFAULT_BANNER) : ''"
             class="absolute size-full rounded-md object-cover" alt="banner"
-            @load="imageLoaded = true;state.imageLoaded.add(game + String(news.id))"
+            referrerpolicy="no-referrer"
+            @load="onImageLoaded"
           >
         </Transition>
       </div>
@@ -121,7 +129,11 @@ function getWeek(date: string) {
           新闻ID: {{ news.id }}
         </div>
         <div class="text-ellipsis whitespace-nowrap text-sm">
-          新闻类型: {{ news.tag }} <span v-if="news.video" class="font-bold text-blue-500" @click.stop.prevent="copyToClipboard(news.video)">存在视频</span>
+          新闻类型: {{ news.tag }}
+          <span v-if="news.video" class="text-blue-500">
+            <span class="ml-2" @click.stop.prevent="openVideo(news.video)">打开视频</span>
+            <span class="ml-2" @click.stop.prevent="copyVideoLink(news.video)">复制链接</span>
+          </span>
         </div>
         <div class="text-sm">
           发布时间: {{ news.startTime }} <span v-if="showDateWeek">星期{{ getWeek(news.startTime) }}</span>
