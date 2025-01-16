@@ -3,7 +3,7 @@ import NewsItem from '@/components/NewsItem.vue'
 import Switch from '@/components/Switch.vue'
 import { APP_ABBR, NEWS_CLASSIFY_RULE, NEWS_LIST, SHADOW_ITEM, TAG_ALL, TAG_OTHER, TAG_VIDEO } from '@/constants'
 import { Settings, SettingType } from '@orilight/vue-settings'
-import { useElementBounding, useThrottle, useUrlSearchParams } from '@vueuse/core'
+import { useElementBounding, useElementSize, useThrottle, useUrlSearchParams } from '@vueuse/core'
 import { useToast } from 'vue-toastification'
 
 const settings = new Settings(APP_ABBR)
@@ -16,7 +16,7 @@ const tags = ref<{ [index: string]: number }>({})
 const container = ref<HTMLElement>()
 const shadowItem = ref<HTMLElement>()
 const containerTop = useThrottle(useElementBounding(container).top, 30, true)
-const itemHeight = useElementBounding(shadowItem).height
+const itemHeight = useElementSize(shadowItem).height
 const params = useUrlSearchParams('history')
 const filterTag = ref(TAG_ALL)
 const source = ref(Object.keys(NEWS_LIST)[0])
