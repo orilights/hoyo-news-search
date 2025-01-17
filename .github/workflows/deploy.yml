@@ -40,7 +40,9 @@ jobs:
         run: pnpm install
 
       - name: Build
-        run: pnpm run build
+        run: |
+          INJECT_HEAD=${{ env.INJECT_HEAD }}
+          pnpm run build
 
       - name: Compress dist to ZIP
         run: |
