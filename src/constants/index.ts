@@ -2,6 +2,7 @@ export * from './api'
 export * from './rule'
 
 export const APP_ABBR = 'GNS'
+export const REPO_URL = 'https://github.com/orilights/hoyo-news-web'
 
 export const SHADOW_ITEM = {
   id: -1,

@@ -7,6 +7,7 @@
 
 一个用于检索米哈游旗下游戏官网新闻的小工具  
 在线访问：[news.hk4e.com](https://news.hk4e.com/)
+在线访问：[news-eo.amarea.cn](https://news-eo.amarea.cn/)
 
 官网新闻源支持：`原神` `崩坏：星穹铁道` `崩坏3` `绝区零` `米哈游`  
 米游社新闻源支持（Beta）：`原神` `崩坏：星穹铁道` `崩坏3` `绝区零`
@@ -18,7 +19,7 @@
 
 分类功能使用关键词匹配标题实现，有时官网新闻的标题本身写的也不是非常规范，分类结果有错漏属于正常现象，对分类规则有任何意见请提 Issue
 
-新闻获取服务器：[news-server](https://github.com/orilights/news-server)
+新闻获取服务器：[hoyo-news-server](https://github.com/orilights/hoyo-news-server)
 
 ## 使用 aria2c 下载视频的简易教程
 
