@@ -6,7 +6,7 @@
 </details>
 
 一个用于检索米哈游旗下游戏官网新闻的小工具  
-在线访问：[news.hk4e.com](https://news.hk4e.com/)
+在线访问：[news.hk4e.com](https://news.hk4e.com/)  
 在线访问：[news-eo.amarea.cn](https://news-eo.amarea.cn/)
 
 官网新闻源支持：`原神` `崩坏：星穹铁道` `崩坏3` `绝区零` `米哈游`  
